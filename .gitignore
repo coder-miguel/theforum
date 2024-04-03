@@ -1,3 +1,4 @@
+**/connection.config
 target/
 pom.xml.tag
 pom.xml.releaseBackup
