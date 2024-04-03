@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestDatabase {
-    private static final String CONNECTION_CONFIG = "connection.config";
+    private static final String CONNECTION_PROPERTIES = "connection.properties";
     String databaseName;
     String connectionString;
     Connection conn;
@@ -28,7 +28,7 @@ public class TestDatabase {
     public void setUp() {
         try {
 
-            InputStream input = TestDatabase.class.getClassLoader().getResourceAsStream(CONNECTION_CONFIG);
+            InputStream input = TestDatabase.class.getClassLoader().getResourceAsStream(CONNECTION_PROPERTIES);
             Properties prop = new Properties();
             prop.load(input);
             input.close();

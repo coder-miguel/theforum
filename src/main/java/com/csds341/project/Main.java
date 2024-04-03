@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Main {
-    private static final String CONNECTION_CONFIG = "connection.config";
+    private static final String CONNECTION_PROPERTIES = "connection.properties";
     private static String databaseName;
     private static String connectionString;
     private static Connection conn;
@@ -30,7 +30,7 @@ public class Main {
              */
             {
                 Properties prop = new Properties();
-                InputStream input = Main.class.getClassLoader().getResourceAsStream(CONNECTION_CONFIG);
+                InputStream input = Main.class.getClassLoader().getResourceAsStream(CONNECTION_PROPERTIES);
                 prop.load(input);
                 input.close();
                 databaseName = prop.getProperty("databaseName");
