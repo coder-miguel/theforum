@@ -1,4 +1,8 @@
 <!--
+    This is the 2nd Report for Team 6's project.
+    It is written in markdown and should be converted to PDF before submission.
+
+    Report Requirements:
     Second Project Report: In addition to the details that should be included in all project reports, you
     should also include:
     • a more detailed ER-diagram that incorporates any changes or feedback from the first report
