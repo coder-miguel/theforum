@@ -46,8 +46,7 @@ CREATE TABLE Attachment (
 );
 
 CREATE TABLE ForumGroup (
-    id INT PRIMARY KEY IDENTITY,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(50) PRIMARY KEY,
     date_created DATETIME NOT NULL,
     user_id INT NOT NULL
     FOREIGN KEY (user_id) REFERENCES ForumUser(id),
@@ -56,17 +55,17 @@ CREATE TABLE ForumGroup (
 
 CREATE TABLE UserGroup (
     user_id INT NOT NULL,
-    group_id INT NOT NULL,
+    group_name VARCHAR(50) NOT NULL,
     date_joined DATETIME NOT NULL,
-    PRIMARY KEY (user_id, group_id),
+    PRIMARY KEY (user_id, group_name),
     FOREIGN KEY (user_id) REFERENCES ForumUser(id),
-    FOREIGN KEY (group_id) REFERENCES ForumGroup(id)
+    FOREIGN KEY (group_name) REFERENCES ForumGroup(id)
 );
 
 CREATE TABLE ThreadGroup (
     thread_id INT NOT NULL,
-    group_id INT NOT NULL,
-    PRIMARY KEY (thread_id, group_id),
+    group_name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (thread_id, group_name),
     FOREIGN KEY (thread_id) REFERENCES Thread(id),
-    FOREIGN KEY (group_id) REFERENCES ForumGroup(id)
+    FOREIGN KEY (group_name) REFERENCES ForumGroup(id)
 );
