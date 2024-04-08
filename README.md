@@ -91,7 +91,7 @@ Good job, and interesting topic. A few notes I have:
 | Work to be Done | Team Member |
 | --- | --- |
 | Report | --- |
-| Functional Dependencies | Unassigned |
+| Functional Dependencies | Mike |
 | Physical Database Design | Unassigned |
 | High-Level Outline of Use Cases | Unassigned |
 | Desired Applications for the Database | Unassigned |
