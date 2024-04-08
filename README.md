@@ -92,7 +92,7 @@ Good job, and interesting topic. A few notes I have:
 | --- | --- |
 | Report | --- |
 | Functional Dependencies | Mike |
-| Physical Database Design | Unassigned |
+| Physical Database Design | Mikey |
 | High-Level Outline of Use Cases | Unassigned |
 | Desired Applications for the Database | Unassigned |
 | Report Review | Unassigned |
