@@ -11,6 +11,8 @@
     • high-level outline of use cases
     • Moreover, you should describe the desired applications for your database and explain the work
     that each member has done and will do
+
+
 -->
 
 # Second Project Report
@@ -31,6 +33,26 @@ This database will keep track of group conversations in a forum. The original po
 thread and all the replies to the thread. It will allow users to post topics to the public forum or to
 restrict access to a topic by group. Posts restricted to a group will only be viewable and repliable
 by members of the group.
+
+## Attempt 1 Feedback
+
+Apr 4 at 9:32am
+
+Good job, and interesting topic. A few notes I have: 
+
+- I am not sure what the google drive link is supposed to be for, but I do not have access.
+
+- In the future, please make sure your lines for your diagram are not overlapping. This makes it difficult to understand what it's representing.
+
+- Your Thread table has a reply_id attribute, but this is not needed as far as I understand since you store thread_id in the Reply table (and Reply is the 'many' table).
+
+- Your rules state that a Reply can only have 1 or more content attachments, but your diagram suggests that it can have 0 content attachments. If only stuff like files/images are considered attachments (not the text of the reply), then I could see the diagram's assumption working, but if text is considered a content attachment then I could see the rule's assumption working.
+
+- I would rename your 'user_id' attribute in Group to something like 'owner_id' to distinguish it from users in the group who are not the owner.
+
+- It will be interesting to see how you handle a thread being able to be part of multiple groups but only viewable by those groups. I'm not entirely sure why this functionality is needed (rather than just having threads belonging to 1 or 0 groups), but I don't see why it's a problem if you would like to implement it this way. Feel free to email me (eme65@case.edu) or visit my office hours if you have any questions or need help moving forward.
+
+- Emil Ekambaram
 
 ## Updated ER Diagram
 
