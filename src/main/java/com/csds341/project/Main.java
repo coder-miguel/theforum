@@ -1,6 +1,7 @@
 /**
  * Project: CSDS 341 Project Group 6
  * Database: The Forum
+ * Version: 1.0
  * Authors:
  *  - Mikey Maldonado (mxm1667)
  *  - Mike Zhang (zxz1233)
