@@ -8,8 +8,7 @@ CREATE DATABASE theforum;
 USE theforum;
 
 CREATE TABLE ForumUser (
-    id INT PRIMARY KEY IDENTITY,
-    username VARCHAR(16) UNIQUE NOT NULL,
+    username VARCHAR(16) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     date_created DATETIME NOT NULL,
@@ -18,19 +17,19 @@ CREATE TABLE ForumUser (
 
 CREATE TABLE Thread (
     id INT PRIMARY KEY IDENTITY,
-    user_id INT NOT NULL,
+    username VARCHAR(16) NOT NULL,
     title VARCHAR(50) NOT NULL,
     date_created DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES ForumUser(id)
+    FOREIGN KEY (username) REFERENCES ForumUser(username)
 );
 
 CREATE TABLE Reply (
     id INT PRIMARY KEY IDENTITY,
-    user_id INT NOT NULL,
     thread_id INT NOT NULL,
+    username VARCHAR(16) NOT NULL,
     content TEXT NOT NULL,
     date_created DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES ForumUser(id),
+    FOREIGN KEY (username) REFERENCES ForumUser(username),
     FOREIGN KEY (thread_id) REFERENCES Thread(id)
 );
 
@@ -38,7 +37,7 @@ CREATE TABLE Attachment (
     id INT PRIMARY KEY IDENTITY,
     reply_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
-    mimetype VARCHAR(255) NOT NULL,
+    metadata VARCHAR(255) NOT NULL,
     data VARBINARY(MAX) NOT NULL,
     FOREIGN KEY (reply_id) REFERENCES Reply(id),
     CONSTRAINT attachmentname_length_check CHECK (LEN(name) >= 1),
@@ -48,17 +47,17 @@ CREATE TABLE Attachment (
 CREATE TABLE ForumGroup (
     name VARCHAR(50) PRIMARY KEY,
     date_created DATETIME NOT NULL,
-    user_id INT NOT NULL
-    FOREIGN KEY (user_id) REFERENCES ForumUser(id),
+    owner_name VARCHAR(16) NOT NULL
+    FOREIGN KEY (owner_name) REFERENCES ForumUser(username),
     CONSTRAINT groupname_length_check CHECK (LEN(name) >= 1)
 );
 
 CREATE TABLE UserGroup (
-    user_id INT NOT NULL,
+    username VARCHAR(16) NOT NULL,
     group_name VARCHAR(50) NOT NULL,
     date_joined DATETIME NOT NULL,
     PRIMARY KEY (user_id, group_name),
-    FOREIGN KEY (user_id) REFERENCES ForumUser(id),
+    FOREIGN KEY (username) REFERENCES ForumUser(username),
     FOREIGN KEY (group_name) REFERENCES ForumGroup(id)
 );
 
