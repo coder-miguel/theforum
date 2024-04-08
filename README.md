@@ -84,13 +84,13 @@ Good job, and interesting topic. A few notes I have:
 | Initial Database Design | All |
 | Initial Design Review | All |
 | Initial ER Diagram | All |
+| Updated ER Diagram | Mike |
 <!-- UPDATE THIS -->
 
 ## Work to be Done
 | Work to be Done | Team Member |
 | --- | --- |
 | Report | --- |
-| Updated ER Diagram | Unassigned |
 | Functional Dependencies | Unassigned |
 | Physical Database Design | Unassigned |
 | High-Level Outline of Use Cases | Unassigned |
