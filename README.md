@@ -32,9 +32,9 @@ Good job, and interesting topic. A few notes I have:
 
 5. I would rename your `user_id` attribute in Group to something like `owner_id` to distinguish it from users in the group who are not the owner.
 
-6. It will be interesting to see how you handle a thread being able to be part of multiple groups but only viewable by those groups. I'm not entirely sure why this functionality is needed (rather than just having threads belonging to 1 or 0 groups), but I don't see why it's a problem if you would like to implement it this way. Feel free to email me (eme65@case.edu) or visit my office hours if you have any questions or need help moving forward.
+6. It will be interesting to see how you handle a thread being able to be part of multiple groups but only viewable by those groups. I'm not entirely sure why this functionality is needed (rather than just having threads belonging to 1 or 0 groups), but I don't see why it's a problem if you would like to implement it this way.
 
-\- Emil Ekambaram
+\- Emil E.
 
 ## Report Requirements
 
