@@ -68,3 +68,12 @@ CREATE TABLE ThreadGroup (
     FOREIGN KEY (thread_id) REFERENCES Thread(id),
     FOREIGN KEY (group_name) REFERENCES ForumGroup(id)
 );
+
+-- Indices
+
+CREATE INDEX idx_thread_username ON Thread(username);
+CREATE INDEX idx_forumgroup_ownername ON ForumGroup(owner_name);
+CREATE INDEX idx_attachment_replyid ON Attachment(reply_id);
+CREATE INDEX idx_reply_username ON Reply(username);
+CREATE INDEX idx_reply_threadid ON Reply(thread_id);
+CREATE INDEX idx_thread_title ON Thread(title);
