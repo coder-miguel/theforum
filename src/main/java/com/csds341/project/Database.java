@@ -24,6 +24,12 @@ public class Database {
         execute("USE " + dbName);
     }
 
+    public void finalize() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
+    }
+
     public void create(String createFile) throws SQLException, IOException {
         // Check if the connection is closed
         if (conn == null || conn.isClosed()) {
