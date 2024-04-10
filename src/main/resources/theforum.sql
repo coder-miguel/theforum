@@ -1,10 +1,6 @@
 DROP DATABASE IF EXISTS theforum;
 CREATE DATABASE theforum;
 
-/*
- *  Note: Some table names changed to deconflict with reserved keywords in SQL Server
- */
-
 USE theforum;
 
 CREATE TABLE ForumUser (
