@@ -56,9 +56,9 @@ CREATE TABLE UserGroup (
     username VARCHAR(16) NOT NULL,
     group_name VARCHAR(50) NOT NULL,
     date_joined DATETIME NOT NULL,
-    PRIMARY KEY (user_id, group_name),
+    PRIMARY KEY (username, group_name),
     FOREIGN KEY (username) REFERENCES ForumUser(username),
-    FOREIGN KEY (group_name) REFERENCES ForumGroup(id)
+    FOREIGN KEY (group_name) REFERENCES ForumGroup(name)
 );
 
 CREATE TABLE ThreadGroup (
@@ -66,7 +66,7 @@ CREATE TABLE ThreadGroup (
     group_name VARCHAR(50) NOT NULL,
     PRIMARY KEY (thread_id, group_name),
     FOREIGN KEY (thread_id) REFERENCES Thread(id),
-    FOREIGN KEY (group_name) REFERENCES ForumGroup(id)
+    FOREIGN KEY (group_name) REFERENCES ForumGroup(name)
 );
 
 -- Indices
