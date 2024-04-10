@@ -113,4 +113,14 @@ public class TestDatabase {
             fail("Exception: " + e.getMessage());
         }
     }
+
+    @Test
+    public void testDropDatabase() {
+        try {
+            db.execute("USE master");
+            conn.createStatement().execute("DROP DATABASE IF EXISTS " + databaseName);
+        } catch (SQLException e) {
+            fail("Exception: " + e.getMessage());
+        }
+    }
 }
