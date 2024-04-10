@@ -27,7 +27,21 @@ https://drive.google.com/file/d/1Mqd3s_5D0qhksFYDah-cYSEmzq6K9eE_/view?usp=shari
 ## Functional Dependencies and Normalization Issues
 
 - Functional Dependencies:
-    <!-- TODO -->
+
+  username -> all attributes in ForumUser  
+
+  Reply.id -> all attributes in Reply and Thread
+
+  Attachment.id -> all attributes in attachment and reply
+
+  Thread.id -> all attributes in Thread and ForumUser
+
+  ForumGroup.name -> all attributes in ForumGroup and ForumUser
+
+  ForumGroup.username , ForumGroup.group_name -> all attributes in UserGroup, ForumUser and ThreadGroup
+
+  ThreadGroup.thread_id , ThreadGroup.group_name -> all attributes in ThreadGroup, Thread and UserGroup
+
 
 - Normalization Issues:
     - `Thread` and `Reply` are similar in structure, but `Reply` is a child of `Thread`. Normally, the starting of a thread begins with a post (with possible attachments), but because `Reply` also has content and attachments, and `Reply` is inherently a child of `Thread`, we decided to keep them separate.  A thread can have no content, so it will be up to the application to enforce that a `User` will post the initial content of the `Thread` as a `Reply`.
