@@ -10,7 +10,7 @@ USE theforum;
 CREATE TABLE ForumUser (
     username VARCHAR(16) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     date_created DATETIME NOT NULL,
     CONSTRAINT username_length_check CHECK (LEN(username) >= 3 AND LEN(username) <= 16)
 );
