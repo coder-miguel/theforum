@@ -26,25 +26,26 @@ https://drive.google.com/file/d/1Mqd3s_5D0qhksFYDah-cYSEmzq6K9eE_/view?usp=shari
 
 ## Functional Dependencies and Normalization Issues
 
-- Functional Dependencies:
+### Functional Dependencies
 
-  username -> all attributes in ForumUser  
+- `ForumUser.username` -> all attributes in `ForumUser`
 
-  Reply.id -> all attributes in Reply and Thread
+- `Reply.id` -> all attributes in `Reply` and `Thread`
 
-  Attachment.id -> all attributes in attachment and reply
+- `Attachment.id` -> all attributes in `Attachment` and `Reply`
 
-  Thread.id -> all attributes in Thread and ForumUser
+- `Thread.id` -> all attributes in `Thread` and `ForumUser`
 
-  ForumGroup.name -> all attributes in ForumGroup and ForumUser
+- `ForumGroup.name` -> all attributes in `ForumGroup` and `ForumUser`
 
-  ForumGroup.username , ForumGroup.group_name -> all attributes in UserGroup, ForumUser and ThreadGroup
+- `ForumGroup.username` , `ForumGroup.group_name` -> all attributes in `UserGroup`, `ForumUser` and `ThreadGroup`
 
-  ThreadGroup.thread_id , ThreadGroup.group_name -> all attributes in ThreadGroup, Thread and UserGroup
+- `ThreadGroup.thread_id` , `ThreadGroup.group_name` -> all attributes in `ThreadGroup`, `Thread` and `UserGroup`
 
 
-- Normalization Issues:
-    - `Thread` and `Reply` are similar in structure, but `Reply` is a child of `Thread`. Normally, the starting of a thread begins with a post (with possible attachments), but because `Reply` also has content and attachments, and `Reply` is inherently a child of `Thread`, we decided to keep them separate.  A thread can have no content, so it will be up to the application to enforce that a `User` will post the initial content of the `Thread` as a `Reply`.
+### Normalization Issues
+
+- `Thread` and `Reply` are similar in structure, but replies are generally child nodes of a thread. Normally, the starting of a thread begins with a post (with possibly its own attachments), but because `Reply` also has text content and attachments, we decided to have thread not have any content other than a title.  The database will enforce that a new thread must have an initial post as a `Reply`.
     <!-- More? -->
 
 ## Physical Database Design
@@ -56,7 +57,7 @@ https://drive.google.com/file/d/1Mqd3s_5D0qhksFYDah-cYSEmzq6K9eE_/view?usp=shari
 CREATE TABLE ForumUser (
     username VARCHAR(16) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     date_created DATETIME NOT NULL,
     CONSTRAINT username_length_check CHECK (LEN(username) >= 3 AND LEN(username) <= 16)
 );
@@ -176,12 +177,12 @@ CREATE INDEX idx_thread_title ON Thread(title);
 | High-Level Outline of Use Cases | Tola |
 | Desired Applications for the Database | Tola |
 | Initial Java Application | Mikey |
-<!-- TODO MORE -->
+| Functional Dependencies | Mike |
+| Physical Database Design | Mikey |
 
 <!-- Report 2 Requirements -->
 | Work to be Done | Team Member |
 | --- | --- |
-| Functional Dependencies | Mike |
-| Physical Database Design | Mikey |
+| Java Functions | Unassigned |
 | UI / Menu System | Unassigned |
-| Testing | Unassigned |
+| JUnit Testing | Unassigned |
