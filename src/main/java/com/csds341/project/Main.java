@@ -58,11 +58,10 @@ public class Main {
                     DataSet aliceQuery = theForum.query("SELECT * FROM ForumUser WHERE username = 'Alice'");
                     if (aliceQuery.getData().length  == 0) {
                         String[] users = {"Alice", "Bob", "Charlie"};
-                        String[] emails = {"alice@gmail.com", "bob@ymail.com", "charlie@cmail.com"};
                         String[] passwords = {"password1", "password2", "password3"};
         
                         for (int i = 0; i < users.length; i++) {
-                            theForum.execute("INSERT INTO ForumUser (username, email, password, date_created) VALUES ('" + users[i] + "', '" + emails[i] + "', '" + passwords[i] + "', GETDATE())");
+                            theForum.execute("INSERT INTO ForumUser (username, email, password, date_created) VALUES ('" + users[i] + "', '" + passwords[i] + "', GETDATE())");
                         }
                     }
                 }
