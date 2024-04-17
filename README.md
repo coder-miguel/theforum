@@ -183,6 +183,6 @@ CREATE INDEX idx_thread_title ON Thread(title);
 <!-- Report 2 Requirements -->
 | Work to be Done | Team Member |
 | --- | --- |
-| Java Functions | Unassigned |
+| Java Functions | Tola |
 | UI / Menu System | Unassigned |
 | JUnit Testing | Unassigned |
