@@ -6,7 +6,6 @@ USE theforum;
 CREATE TABLE ForumUser (
     username VARCHAR(16) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
     date_created DATETIME NOT NULL,
     CONSTRAINT username_length_check CHECK (LEN(username) >= 3 AND LEN(username) <= 16)
 );
@@ -42,8 +41,8 @@ CREATE TABLE Attachment (
 
 CREATE TABLE ForumGroup (
     name VARCHAR(50) PRIMARY KEY,
+    owner_name VARCHAR(16) NOT NULL,
     date_created DATETIME NOT NULL,
-    owner_name VARCHAR(16) NOT NULL
     FOREIGN KEY (owner_name) REFERENCES ForumUser(username),
     CONSTRAINT groupname_length_check CHECK (LEN(name) >= 1)
 );

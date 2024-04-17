@@ -1,0 +1,7 @@
+Add New User
+Create a Group
+Join/Leave a Group
+Post a Thread
+Post a Reply
+See Available Threads
+See Group Members
