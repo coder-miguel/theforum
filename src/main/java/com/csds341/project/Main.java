@@ -61,7 +61,7 @@ public class Main {
                         String[] passwords = {"password1", "password2", "password3"};
         
                         for (int i = 0; i < users.length; i++) {
-                            theForum.execute("INSERT INTO ForumUser (username, email, password, date_created) VALUES ('" + users[i] + "', '" + passwords[i] + "', GETDATE())");
+                            theForum.execute("INSERT INTO ForumUser (username, password, date_created) VALUES ('" + users[i] + "', '" + passwords[i] + "', GETDATE())");
                         }
                     }
                 }

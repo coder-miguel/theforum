@@ -57,7 +57,6 @@ https://drive.google.com/file/d/1Mqd3s_5D0qhksFYDah-cYSEmzq6K9eE_/view?usp=shari
 CREATE TABLE ForumUser (
     username VARCHAR(16) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
     date_created DATETIME NOT NULL,
     CONSTRAINT username_length_check CHECK (LEN(username) >= 3 AND LEN(username) <= 16)
 );
@@ -130,6 +129,8 @@ CREATE INDEX idx_thread_title ON Thread(title);
 
 ### Triggers
 
+- A trigger that automatically adds the creator of the group to the `ForumGroup`
+
 - A trigger to enforce that a `ForumUser` can only reply to a `Thread` that is in a `ForumGroup` that they are a member of.
 
 - A trigger to insert the timestamp of when entries are inserted into the `Thread`, `Reply`, `ForumUser`, and `ForumGroup`.
@@ -143,6 +144,43 @@ CREATE INDEX idx_thread_title ON Thread(title);
 - A trigger to remove all `ForumUsers` and `Threads` from a `ForumGroup` when the owner deletes a `ForumGroup`.
 
 ## High-Level Outline of Use Cases
+
+```sql 
+-- A user can create a group
+INSERT INTO ForumUser (username, password, date_created)
+VALUES ('user1', 'password1',  GETDATE())
+INSERT INTO ForumGroup (name, owner_name, date_created)
+SELECT 'CSDS 314 Q/A', F.username, GETDATE()
+FROM ForumUser F
+WHERE F.username = 'user1'
+
+-- A user can join an existing group 
+INSERT INTO ForumUser (username, password, date_created)
+VALUES ('user2', 'password2',  GETDATE())
+INSERT INTO UserGroup (username, group_name, date_joined)
+SELECT F.username, G.name, GETDATE()
+FROM ForumUser F, ForumGroup G
+WHERE F.username = 'user2' and G.name = 'CSDS 314 Q/A'
+
+-- A user can view all the thread IDs related to their group 
+SELECT thread_id
+FROM ThreadGroup
+WHERE group_name = 'group the user is in' 
+
+-- A user can view all memeber of the group they are in 
+SELECT username
+FROM UserGroup 
+WHERE group_name = 'group the user is in' 
+
+-- A user can see all threads created by members of their group 
+SELECT T.username 
+FROM Thread T inner join ThreadGroup G
+ON (T.ID = G.thread_id)
+WHERE group_name = 'group the user is in'
+```
+
+
+## High-Level Outline of the forum
 
 - A user can start zero or many threads.
 
