@@ -33,7 +33,7 @@ CREATE TABLE Attachment (
     reply_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     metadata VARCHAR(255) NOT NULL,
-    data VARBINARY(MAX) NOT NULL,
+    data VARCHAR(MAX) NOT NULL,
     FOREIGN KEY (reply_id) REFERENCES Reply(id),
     CONSTRAINT attachmentname_length_check CHECK (LEN(name) >= 1),
     CONSTRAINT attachmentname_unique_check UNIQUE (reply_id, name)
