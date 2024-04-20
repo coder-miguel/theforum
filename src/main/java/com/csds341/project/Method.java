@@ -23,7 +23,6 @@ public class Method {
     private static String username, password, group_name; 
     private static int reply_id;
     private static String connectionUrl;
-    private static Connection conn;
     private static boolean go2 = true;
     private static boolean go = true;
 
@@ -398,10 +397,6 @@ public class Method {
 
     }
 
-    public static void postThread(String username, String title) {
-
-    }
-
     public static void seeAvailableThreads(String group_name) {
         String inputsql = "SELECT * FROM Thread WHERE id in (Select thread_id from ThreadGroup where group_name = ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -415,10 +410,6 @@ public class Method {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void seegroupMemebers(String group_name) {
-
     }
 
     public static boolean checkifValidUsername(String username_i) {
