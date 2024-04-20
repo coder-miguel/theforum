@@ -18,7 +18,8 @@ public class Database {
         this.conn = conn;
         this.dbName = dbName;
         if (!exists()) {
-            create(dbName + ".sql");
+            // create the database
+            read(dbName + ".sql");
         }
         conn.createStatement().execute("USE " + dbName);
     }
@@ -29,15 +30,15 @@ public class Database {
         }
     }
 
-    public void create(String createFile) throws SQLException, IOException {
+    public void read(String file) throws SQLException, IOException {
         // Check if the connection is closed
         if (conn == null || conn.isClosed()) {
             System.out.println("Connection is closed");
             return;
         }
 
-        // Open the theforum.sql file and execute each statement
-        InputStream input = Main.class.getClassLoader().getResourceAsStream(createFile);
+        // Open the file and execute each statement
+        InputStream input = Main.class.getClassLoader().getResourceAsStream(file);
         byte[] buffer = new byte[input.available()];
         input.read(buffer);
         input.close();
@@ -46,7 +47,6 @@ public class Database {
         for (String statement : sqlStatements) {
             conn.createStatement().execute(statement.replace("\n", " "));
         }
-        System.out.println("Database created");
     }
 
     public boolean exists() throws SQLException {
