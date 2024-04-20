@@ -39,7 +39,7 @@ public class Method {
 
         connectionUrl = "jdbc:sqlserver://" + prop.getProperty("databaseServer") + "\\" + prop.getProperty("networkId")
                 + ";"
-                + "databaseName=testforTola;"
+                + "databaseName=theforum;"
                 + "user=sa;"
                 + "password=" + prop.getProperty("saPassword") + ";"
                 + "encrypt=true;"
