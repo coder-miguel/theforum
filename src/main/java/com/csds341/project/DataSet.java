@@ -2,6 +2,8 @@ package com.csds341.project;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataSet {
     private String name;
@@ -15,16 +17,19 @@ public class DataSet {
         for (int i = 0; i < columnCount; i++) {
             columns[i] = rs.getMetaData().getColumnName(i + 1);
         }
-        rs.last();
-        int rowCount = rs.getRow();
-        rs.beforeFirst();
-        data = new String[rowCount][columnCount];
-        int row = 0;
+        int rowCount = 0;
+        List<String[]> listeddata = new ArrayList<>();
         while (rs.next()) {
+            String[] row = new String[columnCount];
             for (int i = 0; i < columnCount; i++) {
-                data[row][i] = rs.getString(i + 1);
+                row[i] = rs.getString(i + 1);
             }
-            row++;
+            listeddata.add(row);
+            rowCount++;
+        }
+        data = new String[rowCount][columnCount];
+        for (int i = 0; i < rowCount; i++) {
+            data[i] = listeddata.get(i);
         }
     }
 

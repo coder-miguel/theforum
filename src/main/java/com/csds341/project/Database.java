@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Database {
 
@@ -21,7 +20,7 @@ public class Database {
         if (!exists()) {
             create(dbName + ".sql");
         }
-        execute("USE " + dbName);
+        conn.createStatement().execute("USE " + dbName);
     }
 
     public void finalize() throws SQLException {
@@ -37,9 +36,6 @@ public class Database {
             return;
         }
 
-        // Create the database
-        execute("DROP DATABASE IF EXISTS " + dbName);
-        execute("CREATE DATABASE " + dbName);
         // Open the theforum.sql file and execute each statement
         InputStream input = Main.class.getClassLoader().getResourceAsStream(createFile);
         byte[] buffer = new byte[input.available()];
@@ -48,8 +44,7 @@ public class Database {
         String sql = new String(buffer);
         String[] sqlStatements = sql.split(";");
         for (String statement : sqlStatements) {
-            statement = statement.replace("\n", "");
-            execute(statement);
+            conn.createStatement().execute(statement.replace("\n", " "));
         }
         System.out.println("Database created");
     }
@@ -65,27 +60,21 @@ public class Database {
         return false;
     }
 
-    public void execute(String statement) throws SQLException {
-        // Check if the connection is closed
-        if (conn == null || conn.isClosed()) {
-            System.out.println("Connection is closed");
-            return;
+    public String[] getUsers() throws SQLException {
+        DataSet ds = new DataSet(conn.createStatement().executeQuery("SELECT username FROM ForumUser"));
+        String[] users = new String[ds.getData().length];
+        for (int i = 0; i < ds.getData().length; i++) {
+            users[i] = ds.getData()[i][0];
         }
-        Statement stmt = conn.createStatement();
-        stmt.execute(statement);
-        stmt.close();
+        return users;
     }
 
-    public DataSet query(String statement) throws SQLException {
-        // Check if the connection is closed
-        if (conn == null || conn.isClosed()) {
-            System.out.println("Connection is closed");
-            return null;
+    public String[] getGroups() throws SQLException {
+        DataSet ds = new DataSet(conn.createStatement().executeQuery("SELECT name FROM ForumGroup"));
+        String[] groups = new String[ds.getData().length];
+        for (int i = 0; i < ds.getData().length; i++) {
+            groups[i] = ds.getData()[i][0];
         }
-        Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(statement);
-        DataSet ds = new DataSet(rs);
-        stmt.close();
-        return ds;
+        return groups;
     }
 }

@@ -101,12 +101,12 @@ public class TestDatabase {
                 "ThreadGroup"
             };
             for (String table : tables) {
-                db.execute("SELECT * FROM " + table);
+                conn.createStatement().execute("SELECT * FROM " + table);
             }
 
             // Assert throw for non-existent table
             assertThrows(SQLException.class, () -> {
-                db.execute("SELECT * FROM NonExistentTable");
+                conn.createStatement().execute("SELECT * FROM NonExistentTable");
             });
 
         } catch (SQLException e) {
@@ -117,7 +117,7 @@ public class TestDatabase {
     @Test
     public void testDropDatabase() {
         try {
-            db.execute("USE master");
+            conn.createStatement().execute("USE master");
             conn.createStatement().execute("DROP DATABASE IF EXISTS " + databaseName);
         } catch (SQLException e) {
             fail("Exception: " + e.getMessage());
