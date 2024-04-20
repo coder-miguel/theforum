@@ -3,6 +3,7 @@ CREATE DATABASE theforum;
 
 USE theforum;
 
+
 CREATE TABLE ForumUser (
     username VARCHAR(16) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
@@ -63,6 +64,10 @@ CREATE TABLE ThreadGroup (
     FOREIGN KEY (thread_id) REFERENCES Thread(id),
     FOREIGN KEY (group_name) REFERENCES ForumGroup(name)
 );
+
+-- Create trigger to insert the name of the user who created a group into to user group table
+
+
 
 -- Indices
 
