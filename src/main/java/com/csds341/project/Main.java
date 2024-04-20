@@ -165,7 +165,7 @@ public class Main {
                             }
 
                             // I need the thread_id to post a reply to this thread
-                            method.postThread(user, title);
+                         //   method.postThread(user, title);
                             
                             // int thread_id = TODO;
                             // method.postReply(user, thread_id, content);
