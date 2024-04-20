@@ -105,7 +105,10 @@ public class Main {
                      */
                     case 1: {
                         System.out.print("Enter a username: ");
-                        method.addnewUser(scanner.nextLine());
+                        String username = scanner.nextLine();
+                        System.out.print("Enter a password: ");
+                        String password = scanner.nextLine();
+                        Method.addnewUser(username, password);
                         break;
                     }
                     /**
