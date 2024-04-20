@@ -7,7 +7,6 @@
  */
 package com.csds341.project;
 
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
