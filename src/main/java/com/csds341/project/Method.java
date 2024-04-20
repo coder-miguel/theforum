@@ -48,7 +48,7 @@ public class Method {
         System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
         while(go){
         String tracker = myObj.nextLine();
-        if (tracker.equals("new")) {
+        if (tracker.toLowerCase().equals("new")) {
             System.out.println("Create a usernmame: ");
             while (checkifValidUsername(myObj.nextLine())){
                 System.out.println("Try again, Invaild input. ");
@@ -61,7 +61,7 @@ public class Method {
             System.out.println("Valid password. ");
             addnewUser(username,password);
             go = false;
-        } else if (tracker.equals("existing")) {
+        } else if (tracker.toLowerCase().equals("existing")) {
             System.out.println("Enter your username: ");
             while (!checkifValidUsername(myObj.nextLine())) {
                 System.out.println("Try again, Invaild username. ");
@@ -77,6 +77,7 @@ public class Method {
             System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
         }
     }
+
 
         delay(1100); 
         System.out.println("Pick an option: ");
@@ -168,6 +169,19 @@ public class Method {
         }
 
         myObj.close();
+    }
+
+    public static String getCurrentLine(Scanner scanner) {
+        scanner.useDelimiter("\\n");
+        return scanner.findInLine(".*");
+    }
+
+    public static void startPt1(){
+        
+    }
+
+    public static void startPt2(){
+        
     }
     public static void createAttachment(String aname, String ainfo, byte[] abinary){
         String inputsql = "INSERT INTO Attachment (reply_id, name, metadata, data) VALUES (?, ?, ?, ?);";
