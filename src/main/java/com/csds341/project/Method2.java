@@ -18,13 +18,15 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.sql.ResultSet;
 
-public class Method {
+public class Method2 {
     private static final String CONNECTION_PROPERTIES = "connection.properties";
     private static String username, password, group_name; 
     private static int reply_id;
     private static String connectionUrl;
     private static boolean go2 = true;
     private static boolean go = true;
+    private static boolean startPt2 = false;
+    private static Scanner myObj = new Scanner(System.in);
 
     public static void main(String[] args) {
         Properties prop = new Properties();
@@ -37,14 +39,40 @@ public class Method {
 
         connectionUrl = "jdbc:sqlserver://" + prop.getProperty("databaseServer") + "\\" + prop.getProperty("networkId")
                 + ";"
-                + "databaseName=theforum;"
+                + "databaseName=testforTola;"
                 + "user=sa;"
                 + "password=" + prop.getProperty("saPassword") + ";"
                 + "encrypt=true;"
                 + "trustServerCertificate=true;"
                 + "loginTimeout=15;";
+        
+        while (true){
+            if (go){
+                startPt1();
+            }
+            if (startPt2){ 
+                startPt2();
+             }
+                
+    }
+}
+    
+    
 
-        Scanner myObj = new Scanner(System.in);
+    public static String getCurrentLine(Scanner scanner) {
+        scanner.useDelimiter("\\n");
+        return scanner.findInLine(".*");
+    }
+
+    public static void startPt1(){
+       username = null;
+       password = null; 
+       group_name = null; 
+    reply_id = 0;
+   go2 = true;
+   go = true;
+    startPt2 = false;
+        myObj = new Scanner(System.in);
         System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
         while(go){
         String tracker = myObj.nextLine();
@@ -71,16 +99,23 @@ public class Method {
                 System.out.println("Try again, Invaild password. ");
             }
             System.out.println("Successful Login");
+            startPt2 = true;
             go = false;
+            startPt2();
         } else {
             System.out.println("Try again, Invaild input. ");
             System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
         }
     }
+    }
 
+    public static void startPt2(){
+        boolean restart = true;
 
+    while (restart) {
         delay(1100); 
         System.out.println("Pick an option: ");
+        System.out.println("0. Restart the program.");
         System.out.println("1. Create a new group");
         System.out.println("2. Join a group");
         System.out.println("3. Create a thread");
@@ -91,6 +126,12 @@ public class Method {
         int option = myObj.nextInt();
         myObj.nextLine();
         switch (option) {
+            case 0:
+                System.out.println("Exiting the program.");
+                go = true;
+                startPt2 = false;
+                startPt1();
+                break;
             case 1:
                 System.out.println("Enter the name of the group: ");
                 while (checkifValidGroup(myObj.nextLine())){
@@ -163,25 +204,20 @@ public class Method {
                 }
                 seeGroupMembers(track2);
                 break;
+
             default:
                 System.out.println("Invalid input.");
                 break;
-        }
 
-        myObj.close();
-    }
-
-    public static String getCurrentLine(Scanner scanner) {
-        scanner.useDelimiter("\\n");
-        return scanner.findInLine(".*");
-    }
-
-    public static void startPt1(){
-        
-    }
-
-    public static void startPt2(){
-        
+            }
+             // After each action, prompt the user if they want to restart startPt2()
+             System.out.println("Do you want to perform another action? (yes/no)");
+             String restartInput = myObj.nextLine();
+             restart = restartInput.equalsIgnoreCase("yes");
+     
+             
+            }    
+            myObj.close(); 
     }
     public static void createAttachment(String aname, String ainfo, byte[] abinary){
         String inputsql = "INSERT INTO Attachment (reply_id, name, metadata, data) VALUES (?, ?, ?, ?);";
@@ -336,6 +372,7 @@ public class Method {
             prepstest.executeUpdate();
             connection.commit();
             System.out.println("Username: " + username + " Password: " + password + " has been added to the database.");
+            startPt2 = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
