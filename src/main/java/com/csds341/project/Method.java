@@ -131,7 +131,7 @@ public class Method {
                 String content = myObj.nextLine();
                 System.out.println("Do you want to add an attachment? (Y/N)");
                 String track4 = myObj.nextLine();
-                if (track4.equals("y") || track4.toLowerCase().equals("yes")){
+                if (track4.toLowerCase().equals("y") || track4.toLowerCase().equals("yes")){
                     postReply(content);
                     System.out.println("Name of attachment: ");
                     String aname = myObj.nextLine();
@@ -176,13 +176,7 @@ public class Method {
         return scanner.findInLine(".*");
     }
 
-    public static void startPt1(){
-        
-    }
 
-    public static void startPt2(){
-        
-    }
     public static void createAttachment(String aname, String ainfo, byte[] abinary){
         String inputsql = "INSERT INTO Attachment (reply_id, name, metadata, data) VALUES (?, ?, ?, ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
