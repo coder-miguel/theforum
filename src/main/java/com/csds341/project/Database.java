@@ -214,12 +214,14 @@ public class Database {
      * @throws SQLException
      */
     public boolean validatePassword(String password, String username) throws SQLException {
-        String sql = "SELECT * FROM ForumUser WHERE username = ? and password = ?;";
+        String sql = "SELECT password FROM ForumUser WHERE username = ?;";
         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, username);
-        ps.setString(2, password);
         DataSet ds = new DataSet(ps.executeQuery());
-        return ds.getData().length > 0;
+        if (ds.getData().length > 0) {
+            return password.equals(ds.getData()[0][0]);
+        }
+        return false;
     }
 
     /**
