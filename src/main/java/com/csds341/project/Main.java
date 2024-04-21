@@ -179,10 +179,10 @@ public class Main {
                 try {
                     theForum.getConn().rollback();
                 } catch (SQLException s) {
-                    s.printStackTrace();
+                    System.err.println("Error rolling back new user: " + s.getMessage());
                 }
                 new_user = null;
-                System.out.println("New User Error: " + e.getMessage());
+                System.err.println("Error creating new user: " + e.getMessage());
                 System.out.println("Please try again.");
             }
             return new_user;
