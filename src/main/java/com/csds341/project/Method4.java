@@ -491,7 +491,6 @@ public class Method4 {
                     ex.printStackTrace();
                 }
             }
-            e.printStackTrace();
             System.out.println("You are already in this group. ");
         }
     }
