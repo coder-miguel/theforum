@@ -253,6 +253,12 @@ public class Main {
                                 selectedThread = selectThread("Select a thread to reply to: ");
                             }
 
+                            // TODO: Show all replies of the selected thread
+                            // for (String r : theForum.getReplies(selectedThread)) {
+                            //     System.out.println(r);
+                            // }
+
+                            // Post a reply
                             System.out.println("Enter the content body: ");
                             String content = scanner.nextLine();
 
