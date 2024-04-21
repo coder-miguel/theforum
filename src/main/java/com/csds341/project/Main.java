@@ -30,12 +30,24 @@ public class Main {
      * @param args unused
      */
     public static void main(String[] args) {
-
         try {
             /**
              * Open Connection to Database
              */
             theForum = new Database(databaseName);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    System.out.println("Closing connection.");
+                    if (theForum != null) {
+                        theForum.finalize();
+                        theForum = null;
+                    }
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                } finally {
+                    System.out.println("Goodbye!");
+                }
+            }));
 
             /*
              * Login
@@ -66,16 +78,6 @@ public class Main {
         } catch (SQLException e) {
             System.err.println("Main SQL Exception: " + e.getMessage());
             System.exit(1);
-        } finally {
-
-            /**
-             * Close the connection
-             */
-            try {
-                theForum.finalize();
-            } catch (SQLException e) {
-                System.err.println("Error closing connection: " + e.getMessage());
-            }
         }
     }
 
@@ -119,7 +121,6 @@ public class Main {
                     user = newUser();
                     break;
                 default:
-                    System.out.println("Goodbye!");
                     break;
                 }
                 return user;
@@ -178,10 +179,10 @@ public class Main {
                 try {
                     theForum.getConn().rollback();
                 } catch (SQLException s) {
-                    s.printStackTrace();
+                    System.err.println("Error rolling back new user: " + s.getMessage());
                 }
                 new_user = null;
-                System.out.println("New User Error: " + e.getMessage());
+                System.err.println("Error creating new user: " + e.getMessage());
                 System.out.println("Please try again.");
             }
             return new_user;
