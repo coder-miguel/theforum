@@ -4,6 +4,25 @@
  * Version: 1.0
  * Authors:
  *  - Tola Oshomoji (tdo18)
+ * User Manual:
+ * This program provides uses a command-line interface to interact with the Forum database.
+ * It allows users to perform various operations such as creating a new user, logging in, creating/joining groups, 
+ * creating threads, posting replies, and viewing available threads and group members.
+ * 
+ * Usage:
+ * 1. When prompted, type 'New' if you are a new user or 'Existing' if you already have an account.
+ * 2. If you're a new user, you'll be prompted to create a username and password. Ensure your username is unique and your password is between 3 and 16 characters long.
+ * 3. If you're an existing user, enter your username and password to log in.
+ * 4. After logging in, you'll be presented with a menu of options to choose from:
+ *    - Create a new group
+ *    - Join a group
+ *    - Create a thread
+ *    - Post a thread
+ *    - Post a reply
+ *    - See available threads in the user's group
+ *    - See group members
+ * 5. Follow the on-screen prompts to perform your desired operation.
+ * 6. At any time, type the corresponding option number to select an action from the menu.
  */
 package com.csds341.project;
 
@@ -46,6 +65,7 @@ public class Method4 {
                 + "loginTimeout=15;";
 
         Scanner myObj = new Scanner(System.in);
+        System.out.println("Welcome to The Forum. ");
         System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
         while(go){
         String tracker = myObj.nextLine();
