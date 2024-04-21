@@ -304,6 +304,50 @@ public class Database {
         return rs.getInt(1);
     }
 
+    public String[] getReplies(int thread_id) throws SQLException {
+        String sql = "SELECT id, username, content, date_created FROM Reply WHERE thread_id = ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, thread_id);
+        DataSet ds = new DataSet(ps.executeQuery());
+        String[] replies = new String[ds.getData().length];
+        for (int i = 0; i < ds.getData().length; i++) {
+            replies[i] = String.format(
+                """
+                    ==============================
+                    username: %s
+                    date_created: %s
+                    content:
+                    %s
+                """, ds.getData()[i][1], ds.getData()[i][3], ds.getData()[i][2]);
+                String[] attachments = getAttachments(Integer.parseInt(ds.getData()[i][0]));
+                for (String attachment : attachments) {
+                    replies[i] += attachment;
+                }
+                replies[i] += "=============================\n";
+        }
+        return replies;
+    }
+
+    public String[] getAttachments(int reply_id) throws SQLException {
+        String sql = "SELECT name, metadata, data FROM Attachment WHERE reply_id = ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, reply_id);
+        DataSet ds = new DataSet(ps.executeQuery());
+        String[] attachments = new String[ds.getData().length];
+        for (int i = 0; i < ds.getData().length; i++) {
+            attachments[i] = String.format(
+                """
+                    ------------------------------
+                    name: %s
+                    metadata: %s
+                    data:
+                    %s
+                    ------------------------------
+                """, ds.getData()[i][0], ds.getData()[i][1], ds.getData()[i][2]);
+        }
+        return attachments;
+    }
+
     /**
      * Create an attachment for a reply
      * @param reply_id the id of the reply whose attachment is being created

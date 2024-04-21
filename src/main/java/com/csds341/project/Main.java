@@ -288,10 +288,10 @@ public class Main {
                                 String title = scanner.nextLine();
                                 selectedThread = theForum.createThread(Main.loggedinUser, title);
                                 if (theForum.getGroups(loggedinUser).length > 0) {
-                                System.out.println("Add thread to a group? (y/n): ");
-                                if (scanner.nextLine().equalsIgnoreCase("y")) {
-                                    String group = MainMenu.selectGroup("Select a group: ", true);
-                                    theForum.addThreadToGroup(selectedThread, group);
+                                    System.out.println("Add thread to a group? (y/n): ");
+                                    if (scanner.nextLine().equalsIgnoreCase("y")) {
+                                        String group = MainMenu.selectGroup("Select a group: ", true);
+                                        theForum.addThreadToGroup(selectedThread, group);
                                     }
                                 }
                             // Select a thread if option is 5
@@ -299,10 +299,10 @@ public class Main {
                                 selectedThread = selectThread("Select a thread to reply to: ");
                             }
 
-                            // TODO: Show all replies of the selected thread
-                            // for (String r : theForum.getReplies(selectedThread)) {
-                            //     System.out.println(r);
-                            // }
+                            // Show all replies of the selected thread
+                            for (String r : theForum.getReplies(selectedThread)) {
+                                System.out.println(r);
+                            }
 
                             // Post a reply
                             System.out.println("Enter the content body: ");
