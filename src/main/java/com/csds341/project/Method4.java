@@ -4,12 +4,32 @@
  * Version: 1.0
  * Authors:
  *  - Tola Oshomoji (tdo18)
+ * User Manual:
+ * This program provides uses a command-line interface to interact with the Forum database.
+ * It allows users to perform various operations such as creating a new user, logging in, creating/joining groups, 
+ * creating threads, posting replies, and viewing available threads and group members.
+ * 
+ * Usage:
+ * 1. When prompted, type 'New' if you are a new user or 'Existing' if you already have an account.
+ * 2. If you're a new user, you'll be prompted to create a username and password. Ensure your username is unique and your password is between 3 and 16 characters long.
+ * 3. If you're an existing user, enter your username and password to log in.
+ * 4. After logging in, you'll be presented with a menu of options to choose from:
+ *    - Create a new group
+ *    - Join a group
+ *    - Create a thread
+ *    - Post a thread
+ *    - Post a reply
+ *    - See available threads in the user's group
+ *    - See group members
+ * 5. Follow the on-screen prompts to perform your desired operation.
+ * 6. At any time, type the corresponding option number to select an action from the menu.
  */
 package com.csds341.project;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.Statement;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -18,7 +38,7 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.sql.ResultSet;
 
-public class Method {
+public class Method4 {
     private static final String CONNECTION_PROPERTIES = "connection.properties";
     private static String username, password, group_name; 
     private static int reply_id;
@@ -45,6 +65,7 @@ public class Method {
                 + "loginTimeout=15;";
 
         Scanner myObj = new Scanner(System.in);
+        System.out.println("Welcome to The Forum. ");
         System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
         while(go){
         String tracker = myObj.nextLine();
@@ -375,13 +396,13 @@ public class Method {
         }
     }
     public static void createGroup(String name, String owner_name) {
-        String inputsql = "INSERT INTO ForumGroup (name, owner_name, date_created) VALUES (?, ?, GETDATE());";
+        String calledStoredProc = "{call dbo.insertCreateGroup(?,?)}";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
-                PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
+                CallableStatement prepstest = connection.prepareCall(calledStoredProc);) {
             prepstest.setString(1, name);
             prepstest.setString(2, owner_name);
             connection.setAutoCommit(false);
-            prepstest.executeUpdate();
+            prepstest.execute();
             connection.commit();
             System.out.println("Group Name: " + name + " Owner Name: " + owner_name + " has been added to the database.");
         } catch (SQLException e) {
@@ -390,16 +411,17 @@ public class Method {
     }
 
     public static void joinGroup(String username, String group_name) {
-        String inputsql = "INSERT INTO UserGroup (username, group_name, date_joined) VALUES (?, ?, GETDATE());";
+        String calledStoredProc = "{call dbo.insertUserGroup(?,?)}";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
-                PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
+                CallableStatement prepstest = connection.prepareCall(calledStoredProc);) {
             prepstest.setString(1, username);
             prepstest.setString(2, group_name);
             connection.setAutoCommit(false);
-            prepstest.executeUpdate();
+            prepstest.execute();
             connection.commit();
             System.out.println("Username: " + username + " Group Name: " + group_name + " has been added to the database.");
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("You are already in this group. ");
         }
 
