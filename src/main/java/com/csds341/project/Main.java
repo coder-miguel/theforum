@@ -25,8 +25,8 @@ public class Main {
     private static String connectionString;
     private static Connection conn;
     private static String loggedinUser;
-    static Database theForum;
-    static Scanner scanner = new Scanner(System.in);
+    private static Database theForum;
+    private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
@@ -73,50 +73,10 @@ public class Main {
                 }
                 switch(loginOption) {
                     case 1:
-                        if (theForum.getUsers().length == 0) {
-                            System.out.println("No users found. Please create a user first.");
-                        } else {
-                            String loginAttempt = Menu.selectUser("Select a user to log in as: ");
-                            System.out.println("Enter in your password: ");
-                            String password = scanner.nextLine();
-                            while (!theForum.validatePassword(password, loginAttempt)) {
-                                System.out.println("Invalid password. Please try again.");
-                                password = scanner.nextLine();
-                            }
-                            System.out.println("You are now logged in as " + loginAttempt + ".");
-                            loggedinUser = loginAttempt;
-                            break;
-                        }
+                        Main.login();
+                        break;
                     case 2:
-                        boolean success = false;
-                        while (!success) {
-                            System.out.println("Enter in your new username: ");
-                            String username = scanner.nextLine();
-                            while(theForum.userExists(username)) {
-                                System.out.println("Enter in your new username: ");
-                                username = scanner.nextLine();
-                            }
-                            String password = "";
-                            while(!Database.goodPassword(password)) {
-                                System.out.println("Enter in your new password: ");
-                                password = scanner.nextLine();
-                            }
-                            try {
-                                theForum.addnewUser(username, password);
-                                success = true;
-                                System.out.println("You are now logged in as " + username + ".");
-                                loggedinUser = username;
-                            } catch (Exception e) {
-                                try {
-                                    conn.rollback();
-                                } catch (SQLException s) {
-                                    s.printStackTrace();
-                                }
-                                success = false;
-                                System.out.println("Error: " + e.getMessage());
-                                System.out.println("Please try again.");
-                            }
-                        }
+                        Main.newUser();
                         break;
                     case 3:
                         System.out.println("Goodbye!");
@@ -168,6 +128,59 @@ public class Main {
             }
         }
     }
+    static void login() {
+        try {
+
+            if (theForum.getUsers().length == 0) {
+                System.out.println("No users found. Please create a user first.");
+            } else {
+                String loginAttempt = Menu.selectUser("Select a user to log in as: ");
+                System.out.println("Enter in your password: ");
+                String password = scanner.nextLine();
+                while (!theForum.validatePassword(password, loginAttempt)) {
+                    System.out.println("Invalid password. Please try again.");
+                    password = scanner.nextLine();
+                }
+                System.out.println("You are now logged in as " + loginAttempt + ".");
+                loggedinUser = loginAttempt;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Exception: " + e.getMessage());
+        }
+    }
+
+    static void newUser() {
+        boolean success = false;
+        while (!success) {
+            System.out.println("Enter in your new username: ");
+            String username = scanner.nextLine();
+            try {
+                while(theForum.userExists(username)) {
+                    System.out.println("Enter in your new username: ");
+                    username = scanner.nextLine();
+                }
+                String password = "";
+                while(!Database.goodPassword(password)) {
+                    System.out.println("Enter in your new password: ");
+                    password = scanner.nextLine();
+                }
+                theForum.addnewUser(username, password);
+                success = true;
+                System.out.println("You are now logged in as " + username + ".");
+                loggedinUser = username;
+            } catch (SQLException e) {
+                try {
+                    conn.rollback();
+                } catch (SQLException s) {
+                    s.printStackTrace();
+                }
+                success = false;
+                System.out.println("Error: " + e.getMessage());
+                System.out.println("Please try again.");
+            }
+        }
+    }
+
     class Menu {
         static void select(int option) {
             System.out.println();
