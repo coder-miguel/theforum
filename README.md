@@ -331,13 +331,30 @@ CREATE INDEX idx_thread_title ON Thread(title);
 ```java
 /*
  * Functional Dependencies:
- * - `ForumUser.username` -> all attributes in `ForumUser`
- * - `Reply.id` -> all attributes in `Reply` and `Thread`
- * - `Attachment.id` -> all attributes in `Attachment` and `Reply`
- * - `Thread.id` -> all attributes in `Thread` and `ForumUser`
- * - `ForumGroup.name` -> all attributes in `ForumGroup` and `ForumUser`
- * - `ForumGroup.username` , `ForumGroup.group_name` -> all attributes in `UserGroup`, `ForumUser` and `ThreadGroup`
- * - `ThreadGroup.thread_id` , `ThreadGroup.group_name` -> all attributes in `ThreadGroup`, `Thread` and `UserGroup`
+ * 
+ * - `ForumUser.username`   -> `ForumUser`
+ * 
+ * - `UserGroup.group_name`,
+ *   `UserGroup.username`   -> `UserGroup`, `ForumGroup`, and `ForumUser`
+ * 
+ *   `UserGroup.username`   -> `ForumUser`
+ * 
+ * - `UserGroup.group_name` -> `ForumGroup` and `ForumUser`
+ * 
+ * - `ForumGroup.name`      -> `ForumGroup` and `ForumUser`
+ * 
+ * - `ThreadGroup.thread_id`,
+ *   `ThreadGroup.group_name`-> `ThreadGroup`, `Thread`, `ForumGroup`, and `ForumUser`
+ * 
+ * - `ThreadGroup.thread_id` -> `Thread` and `ForumUser`
+ * 
+ * - `ThreadGroup.group_name`-> `ForumGroup` and `ForumUser`
+ * 
+ * - `Thread.id`            -> `Thread` and `ForumUser`
+ * 
+ * - `Reply.id`             -> `Reply`, `Thread`, and `ForumUser`
+ * 
+ * - `Attachment.id`        -> `Attachment`, `ForumUser`, `Reply` and `Thread`
  *
  * Normalization Issues:
  * Thread` and `Reply` are similar in structure, but replies are
@@ -413,10 +430,5 @@ END;
 | Initial Java Application | Mikey |
 | Functional Dependencies | Mike |
 | Physical Database Design | Mikey |
-
-<!-- Report 2 Requirements -->
-| Work to be Done | Team Member |
-| --- | --- |
 | Java Functions | Tola |
-| UI / Menu System | Unassigned |
-| JUnit Testing | Unassigned |
+| UI / Menu System | Mikey |
