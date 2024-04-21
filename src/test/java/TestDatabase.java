@@ -1,10 +1,6 @@
 import com.csds341.project.Database;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import org.junit.Test;
 import org.junit.Before;
@@ -15,10 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestDatabase {
-    private static final String CONNECTION_PROPERTIES = "connection.properties";
     String databaseName;
-    String connectionString;
-    Connection conn;
     Database db;
 
     /**
@@ -27,25 +20,7 @@ public class TestDatabase {
     @Before
     public void setUp() {
         try {
-
-            InputStream input = TestDatabase.class.getClassLoader().getResourceAsStream(CONNECTION_PROPERTIES);
-            Properties prop = new Properties();
-            prop.load(input);
-            input.close();
-    
-            String networkId = prop.getProperty("networkId");
-            String databaseServer = prop.getProperty("databaseServer");
-            String saPassword = prop.getProperty("saPassword");
-            
-            databaseName = prop.getProperty("databaseName");
-            connectionString = "jdbc:sqlserver://" + databaseServer + "\\" + networkId + ";"
-                    + "user=sa;"
-                    + "password=" + saPassword + ";"
-                    + "encrypt=true;"
-                    + "trustServerCertificate=true;"
-                    + "loginTimeout=15;";
-            conn = DriverManager.getConnection(connectionString);
-            db = new Database(conn, databaseName);
+            db = new Database(databaseName);
         } catch (Exception e) {
             fail("Exception: " + e.getMessage());
         }
@@ -58,11 +33,9 @@ public class TestDatabase {
     @After
     public void tearDown() {
         try {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+            db.finalize();
         } catch (SQLException e) {
-            fail("Exception: " + e.getMessage());
+            fail("Close Connection Error: " + e.getMessage());
         }
     }
 
@@ -73,9 +46,9 @@ public class TestDatabase {
     @Test
     public void testConnection() {
         try {
-            assertTrue("Connection is not null", conn != null);
-            assertTrue("Connection is not closed", !conn.isClosed());
             assertTrue("Database is not null", db != null);
+            assertTrue("Connection is not null", db.getConn() != null);
+            assertTrue("Connection is not closed", !db.getConn().isClosed());
         } catch (Exception e) {
             fail("Exception: " + e.getMessage());
         }
@@ -101,12 +74,12 @@ public class TestDatabase {
                 "ThreadGroup"
             };
             for (String table : tables) {
-                conn.createStatement().execute("SELECT * FROM " + table);
+                db.getConn().createStatement().execute("SELECT * FROM " + table);
             }
 
             // Assert throw for non-existent table
             assertThrows(SQLException.class, () -> {
-                conn.createStatement().execute("SELECT * FROM NonExistentTable");
+                db.getConn().createStatement().execute("SELECT * FROM NonExistentTable");
             });
 
         } catch (SQLException e) {
@@ -117,8 +90,8 @@ public class TestDatabase {
     @Test
     public void testDropDatabase() {
         try {
-            conn.createStatement().execute("USE master");
-            conn.createStatement().execute("DROP DATABASE IF EXISTS " + databaseName);
+            db.getConn().createStatement().execute("USE master");
+            db.getConn().createStatement().execute("DROP DATABASE IF EXISTS " + databaseName);
         } catch (SQLException e) {
             fail("Exception: " + e.getMessage());
         }
