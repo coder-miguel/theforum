@@ -287,10 +287,12 @@ public class Main {
                                 System.out.println("Enter a title for the thread: ");
                                 String title = scanner.nextLine();
                                 selectedThread = theForum.createThread(Main.loggedinUser, title);
+                                if (theForum.getGroups(loggedinUser).length > 0) {
                                 System.out.println("Add thread to a group? (y/n): ");
                                 if (scanner.nextLine().equalsIgnoreCase("y")) {
                                     String group = MainMenu.selectGroup("Select a group: ", true);
                                     theForum.addThreadToGroup(selectedThread, group);
+                                    }
                                 }
                             // Select a thread if option is 5
                             } else {
