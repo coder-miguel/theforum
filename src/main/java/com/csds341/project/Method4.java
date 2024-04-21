@@ -64,6 +64,7 @@ public class Method4 {
                 + "trustServerCertificate=true;"
                 + "loginTimeout=15;";
 
+        // This is the beginning of the user interface
         Scanner myObj = new Scanner(System.in);
         System.out.println("Welcome to The Forum. ");
         System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
@@ -99,8 +100,8 @@ public class Method4 {
         }
     }
 
-
-        delay(1100); 
+        // This is the main menu for the user to select from
+        delay(1000); 
         System.out.println("Pick an option: ");
         System.out.println("1. Create a new group");
         System.out.println("2. Join a group");
@@ -192,12 +193,7 @@ public class Method4 {
         myObj.close();
     }
 
-    public static String getCurrentLine(Scanner scanner) {
-        scanner.useDelimiter("\\n");
-        return scanner.findInLine(".*");
-    }
-
-
+    // Method that creates an attachment to a reply
     public static void createAttachment(String aname, String ainfo, byte[] abinary){
         String inputsql = "INSERT INTO Attachment (reply_id, name, metadata, data) VALUES (?, ?, ?, ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -213,9 +209,9 @@ public class Method4 {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
     }
+
+    // A method that posts a reply to a thread
     public static void postReply(String content) {
         ResultSet resultSet = null;
         String inputsql = "INSERT INTO Reply (thread_id, username, content, date_created) VALUES (?, ?, ?, GETDATE());";
@@ -236,7 +232,8 @@ public class Method4 {
             e.printStackTrace();
         }
     }
-
+    
+    // A method that checks if the thread id is valid for a reply
     public static boolean checkthreadIDforReply(int thread_id_i) {
         reply_id = thread_id_i;
         String inputsql = "select * from (Select thread_id from ThreadGroup where group_name in (select group_name from usergroup where username = ? )) as I where I.thread_id = ?;";
@@ -253,7 +250,7 @@ public class Method4 {
         }
     }
 
-    // High level methods for now until the interface is made
+    // A method that displays the group members for a given group and user
     public static void seeGroupMembers(String group_name) {
         String inputsql = "SELECT username FROM UserGroup WHERE group_name = ?;";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -269,6 +266,8 @@ public class Method4 {
             e.printStackTrace();
         }
     }
+
+    // A method that checks if a user is in a group
     public static boolean checkifInGroup(String group_name) {
         String inputsql = "SELECT username FROM UserGroup WHERE username = ? and group_name = ?;";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -283,6 +282,8 @@ public class Method4 {
             return false;
         }
     }
+
+    // A method that checks if a thread is valid for a group
     public static boolean checkpostThread(int thread_id, String group_name) {
         String inputsql = "SELECT id FROM Thread WHERE id = ? and username in (Select username from UserGroup where username = ? and group_name = ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -306,6 +307,7 @@ public class Method4 {
         }
     }
 
+    // A method that adds a thread to a group
     public static void addThreadToGroup(int thread_id, String group_name) {
         String inputsql = "INSERT INTO ThreadGroup (thread_id, group_name) VALUES (?, ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -321,6 +323,8 @@ public class Method4 {
             e.printStackTrace();
         }
     }
+
+    // A method that creates a thread
     public static void createThread(String title){
         String inputsql = "INSERT INTO Thread values (?, ?, GETDATE());";
         ResultSet resultSet = null;
@@ -341,6 +345,8 @@ public class Method4 {
             e.printStackTrace();
         }
     }
+
+    // A method that adds a new user to the database
     public static void addnewUser(String username, String password) {
         String inputsql = "INSERT INTO ForumUser (username, password, date_created) VALUES (?, ?, GETDATE());";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -356,6 +362,7 @@ public class Method4 {
         }
     }
 
+    // A method that was created to delay the program so the menu doesn't appear too quickly
     public static void delay(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -364,7 +371,7 @@ public class Method4 {
         }
     }
 
-
+    // A method that displays all available groups
     public static void allavailableGroups() {
         String inputsql = "SELECT name FROM ForumGroup;";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -378,6 +385,8 @@ public class Method4 {
             e.printStackTrace();
         }
     }
+
+    // A method that checks if a group is valid
     public static boolean checkifValidGroup(String group_name_i) {
         if (group_name_i.length() < 1){
              return false;
@@ -395,6 +404,8 @@ public class Method4 {
             return false;
         }
     }
+
+    // A method that creates a group uses a stored procedure to accomplish this
     public static void createGroup(String name, String owner_name) {
         String calledStoredProc = "{call dbo.insertCreateGroup(?,?)}";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -410,6 +421,7 @@ public class Method4 {
         }
     }
 
+    // A method that inserts a user into a group using a stored procedure
     public static void joinGroup(String username, String group_name) {
         String calledStoredProc = "{call dbo.insertUserGroup(?,?)}";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -427,6 +439,7 @@ public class Method4 {
 
     }
 
+    // A method that displays all available threads in a group for a given user
     public static void seeAvailableThreads(String group_name) {
         String inputsql = "SELECT * FROM Thread WHERE id in (Select thread_id from ThreadGroup where group_name = ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -442,6 +455,7 @@ public class Method4 {
         }
     }
 
+    // A method that checks if a username is valid
     public static boolean checkifValidUsername(String username_i) {
         username = username_i;
     String inputsql = "SELECT username FROM ForumUser WHERE username = ?;";
@@ -463,6 +477,7 @@ public class Method4 {
     }
   }
 
+    // A method that checks if a password is valid for a new user
   public static boolean checkifValidPassword(String password_i) {
     if (password_i.length() < 3 || password_i.length() > 16){
         return true;
@@ -472,6 +487,7 @@ public class Method4 {
     }
   }
 
+  // A method that checks if a password is valid for an existing user
   public static boolean checkifValidPasswordE(String password_i) {
     password = password_i;
         String inputsql = "SELECT * FROM ForumUser WHERE username = ? and password = ?;";
