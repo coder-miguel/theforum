@@ -12,7 +12,6 @@ package com.csds341.project;
 import java.sql.SQLException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -53,9 +52,9 @@ public class Main {
              * Menu Loop
              */
             {
-                while (MainMenu.select() != MainMenu.EXIT) {
+                do {
                     MainMenu.show();
-                }
+                } while (MainMenu.select() != MainMenu.EXIT);
             }
 
         /**
@@ -102,25 +101,28 @@ public class Main {
          * @return the username of the logged in user or null if the user chooses to exit.
          */
         static String login() {
-            int selection = 0;
-            while (selection < 1 || selection > 6) {
+            String user = null;
+            int selection = -1;
+            while (selection < 0 || selection > 2) {
                 try {
                     selection = Integer.parseInt(scanner.nextLine());
-                } catch (InputMismatchException e) {
-                    selection = 0;
-                    System.out.println("Invalid input. Please enter a number between 1 and 6.");
+                } catch (NumberFormatException e) {
+                    selection = -1;
+                    System.out.println("Invalid input. Please enter a number between 0 and 2.");
                 }
             }
             switch(selection) {
                 case 1:
-                    return existingUser();
+                    user = existingUser();
+                    if (user != null) break;
                 case 2:
-                    return newUser();
+                    user = newUser();
+                    break;
                 default:
                     System.out.println("Goodbye!");
                     break;
                 }
-                return null;
+                return user;
         }
 
         /**
@@ -218,12 +220,12 @@ public class Main {
          * @return the selected option.
          */
         static int select() {
-            int selection = 0;
-            while (selection < 1 || selection > 6) {
+            int selection = -1;
+            while (selection < 0 || selection > 5) {
                 try {
                     selection = Integer.parseInt(scanner.nextLine());
-                } catch (InputMismatchException e) {
-                    selection = 0;
+                } catch (NumberFormatException e) {
+                    selection = -1;
                     System.out.println("Invalid input. Please enter a number between 0 and 5.");
                 }
             }
@@ -285,20 +287,22 @@ public class Main {
                                 System.out.println("Enter a title for the thread: ");
                                 String title = scanner.nextLine();
                                 selectedThread = theForum.createThread(Main.loggedinUser, title);
-                                System.out.println("Add thread to a group? (y/n): ");
-                                if (scanner.nextLine().equalsIgnoreCase("y")) {
-                                    String group = MainMenu.selectGroup("Select a group: ", true);
-                                    theForum.addThreadToGroup(selectedThread, group);
+                                if (theForum.getGroups(loggedinUser).length > 0) {
+                                    System.out.println("Add thread to a group? (y/n): ");
+                                    if (scanner.nextLine().equalsIgnoreCase("y")) {
+                                        String group = MainMenu.selectGroup("Select a group: ", true);
+                                        theForum.addThreadToGroup(selectedThread, group);
+                                    }
                                 }
                             // Select a thread if option is 5
                             } else {
                                 selectedThread = selectThread("Select a thread to reply to: ");
                             }
 
-                            // TODO: Show all replies of the selected thread
-                            // for (String r : theForum.getReplies(selectedThread)) {
-                            //     System.out.println(r);
-                            // }
+                            // Show all replies of the selected thread
+                            for (String r : theForum.getReplies(selectedThread)) {
+                                System.out.println(r);
+                            }
 
                             // Post a reply
                             System.out.println("Enter the content body: ");
