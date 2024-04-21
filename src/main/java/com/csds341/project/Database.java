@@ -3,23 +3,38 @@ package com.csds341.project;
 import java.io.InputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Properties;
 
 
 public class Database {
 
+    private static final String CONNECTION_PROPERTIES = "connection.properties";
     private Connection conn;
     private String dbName;
 
-    public Database(Connection conn, String dbName) throws SQLException, IOException {
-        if (this.conn != null && !this.conn.isClosed()) {
-            conn.close();
-        }
-        this.conn = conn;
+    public Database(String dbName) throws SQLException, IOException {
+            
+        /**
+         * Load database name and connection string from the network properties
+         */
+        Properties prop = new Properties();
+        InputStream input = Main.class.getClassLoader().getResourceAsStream(CONNECTION_PROPERTIES);
+        prop.load(input);
+        input.close();
+        dbName = prop.getProperty("databaseName");
+        String connectionString = "jdbc:sqlserver://" + prop.getProperty("databaseServer") + "\\" + prop.getProperty("networkId") + ";"
+        + "user=sa;"
+        + "password=" + prop.getProperty("saPassword") + ";"
+        + "encrypt=true;"
+        + "trustServerCertificate=true;"
+        + "loginTimeout=15;";
+        conn = DriverManager.getConnection(connectionString);
         this.dbName = dbName;
         if (!exists()) {
             // create the database
