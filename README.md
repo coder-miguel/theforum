@@ -219,8 +219,50 @@ WHERE R.username = 'user1' and R.content = 'reply content'
 
 - Good use cases for select insert update delete? 
     
-    ```sql 
-    
+```sql 
+    -- A user can create a group
+INSERT INTO ForumUser (username, password, date_created)
+VALUES ('user1', 'password1',  GETDATE())
+INSERT INTO ForumGroup (name, owner_name, date_created)
+SELECT 'CSDS 314 Q/A', F.username, GETDATE()
+FROM ForumUser F
+WHERE F.username = 'user1'
+
+-- A user can join an existing group 
+INSERT INTO ForumUser (username, password, date_created)
+VALUES ('user2', 'password2',  GETDATE())
+INSERT INTO UserGroup (username, group_name, date_joined)
+SELECT F.username, G.name, GETDATE()
+FROM ForumUser F, ForumGroup G
+WHERE F.username = 'user2' and G.name = 'CSDS 314 Q/A'
+
+-- A user can view all the thread IDs related to their group 
+SELECT thread_id
+FROM ThreadGroup
+WHERE group_name = 'group the user is in' 
+
+-- A user can view all memeber of the group they are in 
+SELECT username
+FROM UserGroup 
+WHERE group_name = 'group the user is in' 
+
+-- A user can see all threads created by members of their group 
+SELECT T.username 
+FROM Thread T inner join ThreadGroup G
+ON (T.ID = G.thread_id)
+WHERE group_name = 'group the user is in'
+
+-- A user wants to change the title of a thread they created
+UPDATE Thread
+SET title = 'new title'
+WHERE username = 'user1' and title = 'old title'
+
+-- A user wants to add an attachment to a reply they already posted
+INSERT INTO Attachment (reply_id, name, metadata, data)
+SELECT R.id, 'attachment name', 'metadata', 'data'
+FROM Reply R
+WHERE R.username = 'user1' and R.content = 'reply content'
+```
 
 
 
