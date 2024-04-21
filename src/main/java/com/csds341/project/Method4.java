@@ -23,6 +23,12 @@
  *    - See group members
  * 5. Follow the on-screen prompts to perform your desired operation.
  * 6. At any time, type the corresponding option number to select an action from the menu.
+ * 
+ * Sql Files Used:
+ * 1.theforum.sql
+ * 2.storedprocedure1.sql
+ * 3.storedprocedure2.sql
+ * 4.trigger.sql
  */
 package com.csds341.project;
 
@@ -40,11 +46,12 @@ import java.sql.ResultSet;
 
 public class Method4 {
     private static final String CONNECTION_PROPERTIES = "connection.properties";
-    private static String username, password, group_name; 
+    private static String username, password, group_name;
     private static int reply_id;
     private static String connectionUrl;
     private static boolean go2 = true;
     private static boolean go = true;
+    private static Connection connection;
 
     public static void main(String[] args) {
         Properties prop = new Properties();
@@ -54,7 +61,6 @@ public class Method4 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         connectionUrl = "jdbc:sqlserver://" + prop.getProperty("databaseServer") + "\\" + prop.getProperty("networkId")
                 + ";"
                 + "databaseName=theforum;"
@@ -63,45 +69,44 @@ public class Method4 {
                 + "encrypt=true;"
                 + "trustServerCertificate=true;"
                 + "loginTimeout=15;";
-
         // This is the beginning of the user interface
         Scanner myObj = new Scanner(System.in);
         System.out.println("Welcome to The Forum. ");
         System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
-        while(go){
-        String tracker = myObj.nextLine();
-        if (tracker.toLowerCase().equals("new")) {
-            System.out.println("Create a usernmame: ");
-            while (checkifValidUsername(myObj.nextLine())){
+        while (go) {
+            String tracker = myObj.nextLine();
+            if (tracker.toLowerCase().equals("new")) {
+                System.out.println("Create a usernmame: ");
+                while (checkifValidUsername(myObj.nextLine())) {
+                    System.out.println("Try again, Invaild input. ");
+                }
+                System.out.println("Valid username. ");
+                System.out.println("Create a password: ");
+                while (checkifValidPassword(myObj.nextLine())) {
+                    System.out.println("Try again, Invaild password. ");
+                }
+                System.out.println("Valid password. ");
+                addnewUser(username, password);
+                go = false;
+            } else if (tracker.toLowerCase().equals("existing")) {
+                System.out.println("Enter your username: ");
+                while (!checkifValidUsername(myObj.nextLine())) {
+                    System.out.println("Try again, Invaild username. ");
+                }
+                System.out.println("Enter your password: ");
+                while (!checkifValidPasswordE(myObj.nextLine())) {
+                    System.out.println("Try again, Invaild password. ");
+                }
+                System.out.println("Successful Login");
+                go = false;
+            } else {
                 System.out.println("Try again, Invaild input. ");
+                System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
             }
-            System.out.println("Valid username. ");
-            System.out.println("Create a password: ");
-            while (checkifValidPassword(myObj.nextLine())) {
-                System.out.println("Try again, Invaild password. ");
-            }
-            System.out.println("Valid password. ");
-            addnewUser(username,password);
-            go = false;
-        } else if (tracker.toLowerCase().equals("existing")) {
-            System.out.println("Enter your username: ");
-            while (!checkifValidUsername(myObj.nextLine())) {
-                System.out.println("Try again, Invaild username. ");
-            }
-            System.out.println("Enter your password: ");
-            while (!checkifValidPasswordE(myObj.nextLine())) {
-                System.out.println("Try again, Invaild password. ");
-            }
-            System.out.println("Successful Login");
-            go = false;
-        } else {
-            System.out.println("Try again, Invaild input. ");
-            System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
         }
-    }
 
         // This is the main menu for the user to select from
-        delay(1000); 
+        delay(1000);
         System.out.println("Pick an option: ");
         System.out.println("1. Create a new group");
         System.out.println("2. Join a group");
@@ -115,19 +120,19 @@ public class Method4 {
         switch (option) {
             case 1:
                 System.out.println("Enter the name of the group: ");
-                while (checkifValidGroup(myObj.nextLine())){
-                 System.out.println("Try again, Group Name already exists.");
+                while (checkifValidGroup(myObj.nextLine())) {
+                    System.out.println("Try again, Group Name already exists.");
                 }
                 System.out.println("valid group name.");
-                createGroup(group_name,username);
+                createGroup(group_name, username);
                 break;
             case 2:
                 System.out.println("Available Groups to join: ");
                 allavailableGroups();
                 System.out.println("Enter the name of the group: ");
-                while (!checkifValidGroup(myObj.nextLine())){
+                while (!checkifValidGroup(myObj.nextLine())) {
                     System.out.println("Try again, group doesn't exists.");
-                   }
+                }
                 joinGroup(username, group_name);
                 break;
             case 3:
@@ -135,17 +140,17 @@ public class Method4 {
                 createThread(myObj.nextLine());
                 break;
             case 4:
-                while (go2){
-                System.out.println("Enter the ID of your thread: ");
-                int thread_id = myObj.nextInt();
-                myObj.nextLine();
-                System.out.println("Enter the name of the group you want to add your thread to : ");
-                checkpostThread(thread_id, myObj.nextLine());
-            }
-            break;
+                while (go2) {
+                    System.out.println("Enter the ID of your thread: ");
+                    int thread_id = myObj.nextInt();
+                    myObj.nextLine();
+                    System.out.println("Enter the name of the group you want to add your thread to : ");
+                    checkpostThread(thread_id, myObj.nextLine());
+                }
+                break;
             case 5:
                 System.out.println("Enter the thread id: ");
-                while (!checkthreadIDforReply(myObj.nextInt())){
+                while (!checkthreadIDforReply(myObj.nextInt())) {
                     System.out.println("Try again, thread id doesn't exists.");
                 }
                 myObj.nextLine();
@@ -153,7 +158,7 @@ public class Method4 {
                 String content = myObj.nextLine();
                 System.out.println("Do you want to add an attachment? (Y/N)");
                 String track4 = myObj.nextLine();
-                if (track4.toLowerCase().equals("y") || track4.toLowerCase().equals("yes")){
+                if (track4.toLowerCase().equals("y") || track4.toLowerCase().equals("yes")) {
                     postReply(content);
                     System.out.println("Name of attachment: ");
                     String aname = myObj.nextLine();
@@ -170,16 +175,16 @@ public class Method4 {
             case 6:
                 System.out.println("Enter the name of the group: ");
                 String track = myObj.nextLine();
-                while (!checkifInGroup(track)){
+                while (!checkifInGroup(track)) {
                     System.out.println("Try again, you are not in this group.");
                     track = myObj.nextLine();
-               }
+                }
                 seeAvailableThreads(track);
                 break;
-            case 7: 
+            case 7:
                 System.out.println("Enter the name of the group: ");
                 String track2 = myObj.nextLine();
-                while (!checkifInGroup(track2)){
+                while (!checkifInGroup(track2)) {
                     System.out.println("Try again, you are not in this group.");
                     track2 = myObj.nextLine();
                 }
@@ -194,7 +199,7 @@ public class Method4 {
     }
 
     // Method that creates an attachment to a reply
-    public static void createAttachment(String aname, String ainfo, byte[] abinary){
+    public static void createAttachment(String aname, String ainfo, byte[] abinary) {
         String inputsql = "INSERT INTO Attachment (reply_id, name, metadata, data) VALUES (?, ?, ?, ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
                 PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
@@ -207,6 +212,13 @@ public class Method4 {
             connection.commit();
             System.out.println("Attachment has been added to the Thread.");
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
         }
     }
@@ -229,10 +241,17 @@ public class Method4 {
             connection.commit();
             System.out.println("Reply has been added to the thread.");
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
         }
     }
-    
+
     // A method that checks if the thread id is valid for a reply
     public static boolean checkthreadIDforReply(int thread_id_i) {
         reply_id = thread_id_i;
@@ -298,7 +317,8 @@ public class Method4 {
                 addThreadToGroup(thread_id, group_name);
                 go2 = false;
             } else {
-                System.out.println("Thread ID: " + thread_id + " is invalid. or you are not in the group: " + group_name);
+                System.out
+                        .println("Thread ID: " + thread_id + " is invalid. or you are not in the group: " + group_name);
             }
             return resultSetNotEmpty;
         } catch (SQLException e) {
@@ -319,13 +339,20 @@ public class Method4 {
             connection.commit();
             System.out.println("Thread ID: " + thread_id + " has been added to the group: " + group_name);
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             System.out.println("This thread is already in the group.");
             e.printStackTrace();
         }
     }
 
     // A method that creates a thread
-    public static void createThread(String title){
+    public static void createThread(String title) {
         String inputsql = "INSERT INTO Thread values (?, ?, GETDATE());";
         ResultSet resultSet = null;
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -337,11 +364,18 @@ public class Method4 {
             resultSet = prepstest.getGeneratedKeys();
             while (resultSet.next()) {
                 System.out.println("Your Thread ID is:  " +
-                resultSet.getString(1));
+                        resultSet.getString(1));
             }
             connection.commit();
             System.out.println("Thread Title: " + title + " has been added to the database.");
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
         }
     }
@@ -358,11 +392,19 @@ public class Method4 {
             connection.commit();
             System.out.println("Username: " + username + " Password: " + password + " has been added to the database.");
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
         }
     }
 
-    // A method that was created to delay the program so the menu doesn't appear too quickly
+    // A method that was created to delay the program so the menu doesn't appear too
+    // quickly
     public static void delay(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -388,9 +430,9 @@ public class Method4 {
 
     // A method that checks if a group is valid
     public static boolean checkifValidGroup(String group_name_i) {
-        if (group_name_i.length() < 1){
-             return false;
-        } 
+        if (group_name_i.length() < 1) {
+            return false;
+        }
         group_name = group_name_i;
         String inputsql = "SELECT name FROM ForumGroup WHERE name = ?;";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
@@ -415,8 +457,16 @@ public class Method4 {
             connection.setAutoCommit(false);
             prepstest.execute();
             connection.commit();
-            System.out.println("Group Name: " + name + " Owner Name: " + owner_name + " has been added to the database.");
+            System.out
+                    .println("Group Name: " + name + " Owner Name: " + owner_name + " has been added to the database.");
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
         }
     }
@@ -431,12 +481,19 @@ public class Method4 {
             connection.setAutoCommit(false);
             prepstest.execute();
             connection.commit();
-            System.out.println("Username: " + username + " Group Name: " + group_name + " has been added to the database.");
+            System.out.println(
+                    "Username: " + username + " Group Name: " + group_name + " has been added to the database.");
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
             System.out.println("You are already in this group. ");
         }
-
     }
 
     // A method that displays all available threads in a group for a given user
@@ -448,7 +505,8 @@ public class Method4 {
             connection.setAutoCommit(false);
             ResultSet rs = prepstest.executeQuery();
             while (rs.next()) {
-                System.out.println("Thread ID: " + rs.getString("id") + " Username: " + rs.getString("username") + " Title: " + rs.getString("title") + " Date Created: " + rs.getString("date_created"));
+                System.out.println("Thread ID: " + rs.getString("id") + " Username: " + rs.getString("username")
+                        + " Title: " + rs.getString("title") + " Date Created: " + rs.getString("date_created"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -458,38 +516,32 @@ public class Method4 {
     // A method that checks if a username is valid
     public static boolean checkifValidUsername(String username_i) {
         username = username_i;
-    String inputsql = "SELECT username FROM ForumUser WHERE username = ?;";
-    try(
-    Connection connection = DriverManager.getConnection(connectionUrl);
-    PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);)
-    {
-        prepstest.setString(1, username_i);
-        connection.setAutoCommit(false);
-        boolean resultSetNotEmpty = prepstest.executeQuery().next();
-           
-       
-        return resultSetNotEmpty;
-    }catch(
-    SQLException e)
-    {
-        e.printStackTrace();
-        return false;
+        String inputsql = "SELECT username FROM ForumUser WHERE username = ?;";
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+                PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
+            prepstest.setString(1, username_i);
+            connection.setAutoCommit(false);
+            boolean resultSetNotEmpty = prepstest.executeQuery().next();
+            return resultSetNotEmpty;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-  }
 
     // A method that checks if a password is valid for a new user
-  public static boolean checkifValidPassword(String password_i) {
-    if (password_i.length() < 3 || password_i.length() > 16){
-        return true;
-    } else {
-        password = password_i;
-        return false;
+    public static boolean checkifValidPassword(String password_i) {
+        if (password_i.length() < 3 || password_i.length() > 16) {
+            return true;
+        } else {
+            password = password_i;
+            return false;
+        }
     }
-  }
 
-  // A method that checks if a password is valid for an existing user
-  public static boolean checkifValidPasswordE(String password_i) {
-    password = password_i;
+    // A method that checks if a password is valid for an existing user
+    public static boolean checkifValidPasswordE(String password_i) {
+        password = password_i;
         String inputsql = "SELECT * FROM ForumUser WHERE username = ? and password = ?;";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
                 PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
@@ -502,5 +554,5 @@ public class Method4 {
             e.printStackTrace();
             return false;
         }
-  }
+    }
 }
