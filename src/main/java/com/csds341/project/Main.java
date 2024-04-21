@@ -12,7 +12,6 @@ package com.csds341.project;
 import java.sql.SQLException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -53,9 +52,9 @@ public class Main {
              * Menu Loop
              */
             {
-                while (MainMenu.select() != MainMenu.EXIT) {
+                do {
                     MainMenu.show();
-                }
+                } while (MainMenu.select() != MainMenu.EXIT);
             }
 
         /**
@@ -107,7 +106,7 @@ public class Main {
             while (selection < 0 || selection > 2) {
                 try {
                     selection = Integer.parseInt(scanner.nextLine());
-                } catch (InputMismatchException e) {
+                } catch (NumberFormatException e) {
                     selection = -1;
                     System.out.println("Invalid input. Please enter a number between 0 and 2.");
                 }
@@ -225,7 +224,7 @@ public class Main {
             while (selection < 0 || selection > 5) {
                 try {
                     selection = Integer.parseInt(scanner.nextLine());
-                } catch (InputMismatchException e) {
+                } catch (NumberFormatException e) {
                     selection = -1;
                     System.out.println("Invalid input. Please enter a number between 0 and 5.");
                 }
