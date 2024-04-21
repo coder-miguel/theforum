@@ -45,7 +45,7 @@ https://drive.google.com/file/d/1Mqd3s_5D0qhksFYDah-cYSEmzq6K9eE_/view?usp=shari
 
 ### Normalization Issues
 
-- `Thread` and `Reply` are similar in structure, but replies are generally child nodes of a thread. Normally, the starting of a thread begins with a post (with possibly its own attachments), but because `Reply` also has text content and attachments, we decided to have thread not have any content other than a title.  The database will enforce that a new thread must have an initial post as a `Reply`.
+- `Thread` and `Reply` are similar in structure, but replies are generally child nodes of a thread. Normally, the starting of a thread begins with a post (with possibly its own attachments), but because `Reply` also has text content and attachments, we decided to have thread not have any content other than a title.
     <!-- More? -->
 
 ## Physical Database Design
@@ -203,6 +203,139 @@ WHERE group_name = 'group the user is in'
 - A Java CLI Application that allows users to interact with the forum.
 
 - A web application that allows users to interact with the forum, sign up, log in, create threads, reply to threads, view threads, and create and join groups.  You can use it like Stack Overflow or a fandom wiki forum.
+
+# CSDS 341-TeamProjectRubric
+
+- Good use cases for select insert update delete? 
+
+- Commits and Rollbaks with transactions? 
+
+- Stored Procedures Implemented?
+
+```sql
+-- create stored procedure insertUserGroup that is used in Method4.java to insert a new row
+-- into the UserGroup table
+create procedure insertUserGroup
+    @username varchar(16),
+    @group_name varchar(50)
+as
+begin
+    insert into UserGroup
+        (username, group_name, date_joined)
+    values
+        (@username, @group_name, GETDATE());
+end
+
+
+-- creates a stored procedure to insert a new group into the ForumGroup table
+create procedure insertCreateGroup
+    @name varchar(50),
+    @owner_name varchar(16)
+as
+begin
+    insert into ForumGroup
+        (name, owner_name, date_created)
+    values
+        (@name, @owner_name, GETDATE());
+end
+```
+
+- Indexes Implemented?
+
+```sql
+CREATE INDEX idx_thread_username ON Thread(username);
+CREATE INDEX idx_forumgroup_ownername ON ForumGroup(owner_name);
+CREATE INDEX idx_attachment_replyid ON Attachment(reply_id);
+CREATE INDEX idx_reply_username ON Reply(username);
+CREATE INDEX idx_reply_threadid ON Reply(thread_id);
+CREATE INDEX idx_thread_title ON Thread(title);
+```
+
+- ER Diagram Correctness
+```java
+// Refer to erd.png
+```
+
+
+- Tables implemented & matching ER Diagram 
+
+```java
+// Refer to erd.png & theforum.sql
+```
+
+- Reasonable Normalization
+
+```java
+/*
+ * Functional Dependencies:
+ * - `ForumUser.username` -> all attributes in `ForumUser`
+ * - `Reply.id` -> all attributes in `Reply` and `Thread`
+ * - `Attachment.id` -> all attributes in `Attachment` and `Reply`
+ * - `Thread.id` -> all attributes in `Thread` and `ForumUser`
+ * - `ForumGroup.name` -> all attributes in `ForumGroup` and `ForumUser`
+ * - `ForumGroup.username` , `ForumGroup.group_name` -> all attributes in `UserGroup`, `ForumUser` and `ThreadGroup`
+ * - `ThreadGroup.thread_id` , `ThreadGroup.group_name` -> all attributes in `ThreadGroup`, `Thread` and `UserGroup`
+ *
+ * Normalization Issues:
+ * Thread` and `Reply` are similar in structure, but replies are
+ * generally child nodes of a thread. Normally, the starting of a
+ * thread begins with a post (with possibly its own attachments),
+ * but because `Reply` also has text content and attachments, we
+ * decided to have thread not have any content other than a title. 
+```
+
+- Command Line Interface clarity 
+
+```java
+/*
+Instructions for running the command line interface is written in the User Manual
+*/
+```
+
+- User Manual clarity 
+
+```java
+/* User Manual:
+ * This program provides uses a command-line interface to interact with the Forum database.
+ * It allows users to perform various operations such as creating a new user, logging in, creating/joining groups, 
+ * creating threads, posting replies, and viewing available threads and group members.
+ * 
+ * Usage:
+ * 1. When prompted, type 'New' if you are a new user or 'Existing' if you already have an account.
+ * 2. If you're a new user, you'll be prompted to create a username and password. Ensure your username is unique and your password is between 3 and 16 characters long.
+ * 3. If you're an existing user, enter your username and password to log in.
+ * 4. After logging in, you'll be presented with a menu of options to choose from:
+ *    - Create a new group
+ *    - Join a group
+ *    - Create a thread
+ *    - Post a thread
+ *    - Post a reply
+ *    - See available threads in the user's group
+ *    - See group members
+ * 5. Follow the on-screen prompts to perform your desired operation.
+ * 6. At any time, type the corresponding option number to select an action from the menu.
+ */
+```
+- Trigger 
+
+```sql 
+-- Create a trigger that inserts a new row into the UserGroup table 
+-- whenever a new row is inserted into the ForumGroup table.
+CREATE TRIGGER insertintoUserGroup
+ON ForumGroup
+AFTER INSERT
+AS
+BEGIN
+    DECLARE @GroupName VARCHAR(50);
+    DECLARE @OwnerName VARCHAR(16);
+
+    SELECT @GroupName = name, @OwnerName = owner_name
+    FROM inserted;
+
+    INSERT INTO UserGroup (username, group_name, date_joined)
+    VALUES (@OwnerName, @GroupName, GETDATE());
+END;
+```
 
 ## Work Done and to be Done
 
