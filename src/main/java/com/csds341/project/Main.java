@@ -102,13 +102,13 @@ public class Main {
          * @return the username of the logged in user or null if the user chooses to exit.
          */
         static String login() {
-            int selection = 0;
-            while (selection < 1 || selection > 6) {
+            int selection = -1;
+            while (selection < 0 || selection > 2) {
                 try {
                     selection = Integer.parseInt(scanner.nextLine());
                 } catch (InputMismatchException e) {
-                    selection = 0;
-                    System.out.println("Invalid input. Please enter a number between 1 and 6.");
+                    selection = -1;
+                    System.out.println("Invalid input. Please enter a number between 0 and 2.");
                 }
             }
             switch(selection) {
@@ -218,12 +218,12 @@ public class Main {
          * @return the selected option.
          */
         static int select() {
-            int selection = 0;
-            while (selection < 1 || selection > 6) {
+            int selection = -1;
+            while (selection < 0 || selection > 5) {
                 try {
                     selection = Integer.parseInt(scanner.nextLine());
                 } catch (InputMismatchException e) {
-                    selection = 0;
+                    selection = -1;
                     System.out.println("Invalid input. Please enter a number between 0 and 5.");
                 }
             }
