@@ -1,3 +1,5 @@
+-- Create a trigger that inserts a new row into the UserGroup table 
+-- whenever a new row is inserted into the ForumGroup table.
 CREATE TRIGGER insertintoUserGroup
 ON ForumGroup
 AFTER INSERT
