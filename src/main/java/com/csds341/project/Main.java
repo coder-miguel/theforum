@@ -102,6 +102,7 @@ public class Main {
          * @return the username of the logged in user or null if the user chooses to exit.
          */
         static String login() {
+            String user = null;
             int selection = -1;
             while (selection < 0 || selection > 2) {
                 try {
@@ -113,14 +114,16 @@ public class Main {
             }
             switch(selection) {
                 case 1:
-                    return existingUser();
+                    user = existingUser();
+                    if (user != null) break;
                 case 2:
-                    return newUser();
+                    user = newUser();
+                    break;
                 default:
                     System.out.println("Goodbye!");
                     break;
                 }
-                return null;
+                return user;
         }
 
         /**
