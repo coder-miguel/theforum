@@ -268,42 +268,9 @@ WHERE R.username = 'user1' and R.content = 'reply content'
 
 - Commits and Rollbaks with transactions? 
 
-```java
-/* Some examples : 
-public static boolean checkifValidGroup(String group_name_i) {
-        if (group_name_i.length() < 1){
-             return false;
-        } 
-        group_name = group_name_i;
-        String inputsql = "SELECT name FROM ForumGroup WHERE name = ?;";
-        try (Connection connection = DriverManager.getConnection(connectionUrl);
-                PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
-            prepstest.setString(1, group_name_i);
-            connection.setAutoCommit(false);
-            boolean resultSetNotEmpty = prepstest.executeQuery().next();
-            return resultSetNotEmpty;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-public static void createGroup(String name, String owner_name) {
-        String calledStoredProc = "{call dbo.insertCreateGroup(?,?)}";
-        try (Connection connection = DriverManager.getConnection(connectionUrl);
-                CallableStatement prepstest = connection.prepareCall(calledStoredProc);) {
-            prepstest.setString(1, name);
-            prepstest.setString(2, owner_name);
-            connection.setAutoCommit(false);
-            prepstest.execute();
-            connection.commit();
-            System.out.println("Group Name: " + name + " Owner Name: " + owner_name + " has been added to the database.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    */
+```sql
+-- We used commits to ensure that the changes made to the database are permanent
+-- We also added rollbacks to ensure that the changes made to the database are not permanent when an error occurs
 ```
 
 - Stored Procedures Implemented?
