@@ -177,6 +177,17 @@ SELECT T.username
 FROM Thread T inner join ThreadGroup G
 ON (T.ID = G.thread_id)
 WHERE group_name = 'group the user is in'
+
+-- A user wants to change the title of a thread they created
+UPDATE Thread
+SET title = 'new title'
+WHERE username = 'user1' and title = 'old title'
+
+-- A user wants to add an attachment to a reply they already posted
+INSERT INTO Attachment (reply_id, name, metadata, data)
+SELECT R.id, 'attachment name', 'metadata', 'data'
+FROM Reply R
+WHERE R.username = 'user1' and R.content = 'reply content'
 ```
 
 
@@ -207,8 +218,51 @@ WHERE group_name = 'group the user is in'
 # CSDS 341-TeamProjectRubric
 
 - Good use cases for select insert update delete? 
+    
+    ```sql 
+    
+
+
 
 - Commits and Rollbaks with transactions? 
+
+```java
+/* Some examples : 
+public static boolean checkifValidGroup(String group_name_i) {
+        if (group_name_i.length() < 1){
+             return false;
+        } 
+        group_name = group_name_i;
+        String inputsql = "SELECT name FROM ForumGroup WHERE name = ?;";
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+                PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
+            prepstest.setString(1, group_name_i);
+            connection.setAutoCommit(false);
+            boolean resultSetNotEmpty = prepstest.executeQuery().next();
+            return resultSetNotEmpty;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+public static void createGroup(String name, String owner_name) {
+        String calledStoredProc = "{call dbo.insertCreateGroup(?,?)}";
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+                CallableStatement prepstest = connection.prepareCall(calledStoredProc);) {
+            prepstest.setString(1, name);
+            prepstest.setString(2, owner_name);
+            connection.setAutoCommit(false);
+            prepstest.execute();
+            connection.commit();
+            System.out.println("Group Name: " + name + " Owner Name: " + owner_name + " has been added to the database.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    */
+```
 
 - Stored Procedures Implemented?
 
