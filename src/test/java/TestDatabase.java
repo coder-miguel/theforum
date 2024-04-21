@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestDatabase {
-    String databaseName;
     Database db;
 
     /**
@@ -20,7 +19,7 @@ public class TestDatabase {
     @Before
     public void setUp() {
         try {
-            db = new Database(databaseName);
+            db = new Database();
         } catch (Exception e) {
             fail("Exception: " + e.getMessage());
         }
@@ -91,7 +90,7 @@ public class TestDatabase {
     public void testDropDatabase() {
         try {
             db.getConn().createStatement().execute("USE master");
-            db.getConn().createStatement().execute("DROP DATABASE IF EXISTS " + databaseName);
+            db.getConn().createStatement().execute("DROP DATABASE IF EXISTS theforum");
         } catch (SQLException e) {
             fail("Exception: " + e.getMessage());
         }

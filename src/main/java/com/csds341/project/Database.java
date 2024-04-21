@@ -27,7 +27,7 @@ public class Database {
      * @throws SQLException
      * @throws IOException
      */
-    public Database(String dbName) throws SQLException, IOException {
+    public Database() throws SQLException, IOException {
             
         /**
          * Load database name and connection string from the network properties
@@ -44,10 +44,12 @@ public class Database {
         + "trustServerCertificate=true;"
         + "loginTimeout=15;";
         conn = DriverManager.getConnection(connectionString);
-        this.dbName = dbName;
         if (!exists()) {
             // create the database
-            read(dbName + ".sql");
+            read(dbName + ".sql", ";");
+            read("storedprocedure1.sql", "\0");
+            read("storedprocedure2.sql", "\0");
+            read("trigger.sql", "\0");
         }
         conn.createStatement().execute("USE " + dbName);
         conn.setAutoCommit(false);
@@ -69,7 +71,7 @@ public class Database {
      * @throws SQLException
      * @throws IOException
      */
-    public void read(String file) throws SQLException, IOException {
+    public void read(String file, String split) throws SQLException, IOException {
         // Check if the connection is closed
         if (conn == null || conn.isClosed()) {
             System.out.println("Connection is closed");
@@ -82,7 +84,7 @@ public class Database {
         input.read(buffer);
         input.close();
         String sql = new String(buffer);
-        String[] sqlStatements = sql.split(";");
+        String[] sqlStatements = sql.split(split);
         for (String statement : sqlStatements) {
             conn.createStatement().execute(statement.replace("\n", " "));
         }

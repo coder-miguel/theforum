@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
-    private static String databaseName;
     private static String loggedinUser;
     private static Database theForum;
     private static Scanner scanner = new Scanner(System.in);
@@ -34,7 +33,7 @@ public class Main {
             /**
              * Open Connection to Database
              */
-            theForum = new Database(databaseName);
+            theForum = new Database();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
                     System.out.println("Closing connection.");
