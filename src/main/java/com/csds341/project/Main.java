@@ -102,6 +102,8 @@ public class Main {
          * @return the username of the logged in user or null if the user chooses to exit.
          */
         static String login() {
+
+            // loop until a valid selection is made
             String user = null;
             int selection = -1;
             while (selection < 0 || selection > 2) {
@@ -112,6 +114,7 @@ public class Main {
                     System.out.println("Invalid input. Please enter a number between 0 and 2.");
                 }
             }
+            
             switch(selection) {
                 case 1:
                     user = existingUser();
@@ -126,9 +129,13 @@ public class Main {
         }
 
         /**
-         * Prompts the user to select an existing user.
-         * If no users exist, prompts the user to create a new user.
-         * @return the username of the selected user or null if an error occurs.
+         * Prompts the user to select an existing user and login.
+         * @return
+         * <ul>
+         *   <li>the selected username if login successful</li>
+         *   <li>an empty string if login unsuccessful</li>
+         *   <li>null if error or exit</li>
+         * </ul>
          */
         static String existingUser() {
             String loginAttempt = null;
@@ -137,14 +144,19 @@ public class Main {
                 if (theForum.getUsers().length == 0) {
                     System.out.println("No users found. Please create a user first.");
                 } else {
+
+                    // If users exist, prompt user to select one
                     loginAttempt = MainMenu.selectUser("Select a user to log in as: ");
                     if (loginAttempt == null) {
                         return "";
                     }
+
+                    // Validate password for selected user
                     System.out.println("Enter in your password: ");
                     String password = scanner.nextLine();
                     while (!theForum.validatePassword(password, loginAttempt)) {
                         attemtps++;
+                        // If too many attempts, exit
                         if (attemtps >= 3) {
                             System.out.println("Too many attempts. Please try again later.");
                             return "";
@@ -166,8 +178,8 @@ public class Main {
          * @return the username of the new user or null if an error occurs.
          */
         static String newUser() {
-            String new_user = null;
-            System.out.println("Enter in your new username: ");
+            String newUser = null;
+            System.out.println("Enter in your new username (leave blank to go back): ");
             String username = scanner.nextLine();
             try {
                 // Loop until a valid username is entered
@@ -175,9 +187,9 @@ public class Main {
                     if (username.length() == 0)
                         return "";
                     else if (theForum.userExists(username))
-                        System.out.println("Username already exists. Try again: ");
+                        System.out.println("Username already exists. Try again.");
                     else if (!theForum.goodUsername(username))
-                        System.out.println("Username must be between 3 and 16 characters. Try again: ");
+                        System.out.println("Username must be between 3 and 16 characters.");
                     else
                         break;
                     username = scanner.nextLine();
@@ -188,21 +200,25 @@ public class Main {
                     System.out.println("Enter in your new password: ");
                     password = scanner.nextLine();
                 }
+
+                // Add the new user to the database
                 theForum.addnewUser(username, password);
                 System.out.println("You are now logged in as " + username + ".");
-                new_user = username;
+                newUser = username;
                 theForum.getConn().commit();
+            
+            // Rollback if there was an error
             } catch (SQLException e) {
                 try {
                     theForum.getConn().rollback();
                 } catch (SQLException s) {
                     System.err.println("Error rolling back new user: " + s.getMessage());
                 }
-                new_user = null;
+                newUser = null;
                 System.err.println("Error creating new user: " + e.getMessage());
                 System.out.println("Please try again.");
             }
-            return new_user;
+            return newUser;
         }
     }
 
@@ -239,6 +255,8 @@ public class Main {
          * @return the selected option.
          */
         static int select() {
+
+            // Loop until a valid option is selected
             int selection = -1;
             while (selection < 0 || selection > 6) {
                 try {
@@ -269,7 +287,7 @@ public class Main {
                         if (theForum.getGroups().length == 0) {
                             System.out.println("No groups found. Please create a group first.");
                         } else {
-                            String group = MainMenu.selectGroup("Select a group: ", false);
+                            String group = selectGroup("Select a group: ", false);
                             if (group != null) {
                                 theForum.joinGroup(group, loggedinUser);
                                 theForum.getConn().commit();
@@ -284,7 +302,7 @@ public class Main {
                         if (theForum.getGroups(loggedinUser).length == 0) {
                             System.out.println("Not in a group. Try creating or joining a group first.");
                         } else {
-                            String group = MainMenu.selectGroup("Select a group: ", true);
+                            String group = selectGroup("Select a group: ", true);
                             System.out.println("Group members: ");
                             for (String member : theForum.groupMembers(group)) {
                                 System.out.println(member);
@@ -311,7 +329,7 @@ public class Main {
                                 System.out.println("Enter a title for the thread: ");
                                 String title = scanner.nextLine();
                                 if (title.length() == 0) title = "[No title]";
-                                selectedThread = theForum.createThread(Main.loggedinUser, title);
+                                selectedThread = theForum.createThread(loggedinUser, title);
                                 if (theForum.getGroups(loggedinUser).length > 0) {
                                     boolean addingGroup = false;
                                     do {
@@ -347,7 +365,7 @@ public class Main {
                             System.out.println("Enter the content body: ");
                             String content = scanner.nextLine();
                             if (content.length() == 0) content = "[Empty]";
-                            int new_reply_id = theForum.postReply(selectedThread, Main.loggedinUser, content);
+                            int new_reply_id = theForum.postReply(selectedThread, loggedinUser, content);
 
                             // Post attachments to the reply
                             System.out.println("Enter the number of attachments: ");
