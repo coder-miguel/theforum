@@ -29,6 +29,9 @@
  * 2.storedprocedure1.sql
  * 3.storedprocedure2.sql
  * 4.trigger.sql
+ * 
+ * Run the Main.java file once before running this forum
+ * That file is where the sql files above will be able to read and executed
  */
 package com.csds341.project;
 
@@ -42,7 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Scanner;
-import java.sql.ResultSet;
+import java.sql.ResultSet;  
 
 public class The_Forum_v2 {
     private static final String CONNECTION_PROPERTIES = "connection.properties";
@@ -52,23 +55,13 @@ public class The_Forum_v2 {
     private static boolean go2 = true;
     private static boolean go = true;
     private static Connection connection;
-    private static boolean startPt1 = true;
-    private static boolean startPt2 = false;
     private static Scanner myObj;
-    public static void main(String[] args) throws SQLException, IOException{
-           
-        
-        while(true){
-        if (startPt1) {
-            startPt1();
-        }
-        if (startPt2) {
-            startPt2();
-        }
-    }
+
+    public static void main(String[] args) throws SQLException, IOException {
+        startPt1();
     }
 
-    public static void startPt1() throws SQLException, IOException{
+    public static void startPt1() throws SQLException, IOException {
         Properties prop = new Properties();
         try (InputStream input = Main.class.getClassLoader().getResourceAsStream(CONNECTION_PROPERTIES)) {
             prop.load(input);
@@ -90,7 +83,7 @@ public class The_Forum_v2 {
         System.out.println("Type 'New' if you are new or 'Existing' if you alreay have an account : ");
         while (go) {
             String tracker = myObj.nextLine();
-            if(tracker.toLowerCase().equals("shutdown")){
+            if (tracker.toLowerCase().equals("shutdown")) {
                 System.out.println("Shutting down......");
                 delay(400);
                 System.exit(0);
@@ -108,7 +101,6 @@ public class The_Forum_v2 {
                 System.out.println("Valid password. ");
                 addnewUser(username, password);
                 go = false;
-                startPt1 = false;
                 startPt2();
             } else if (tracker.toLowerCase().equals("existing")) {
                 System.out.println("Enter your username: ");
@@ -121,7 +113,6 @@ public class The_Forum_v2 {
                 }
                 System.out.println("Successful Login");
                 go = false;
-                startPt1 = false;
                 startPt2();
             } else {
                 System.out.println("Try again, Invaild input. ");
@@ -131,10 +122,10 @@ public class The_Forum_v2 {
 
     }
 
-    public static void startPt2() throws SQLException, IOException{
+    public static void startPt2() throws SQLException, IOException {
         // This is the main menu for the user to select from
         delay(1000);
-        System.out.println("Pick an option: ");
+        System.out.println("Enter a number that corresponds to your choice of action: ");
         System.out.println("0. Log out");
         System.out.println("1. Create a new group");
         System.out.println("2. Join a group");
@@ -143,7 +134,8 @@ public class The_Forum_v2 {
         System.out.println("5. Post a reply");
         System.out.println("6. See available threads in the user's group");
         System.out.println("7. See group members");
-        System.out.println("8. Shut down");
+        System.out.println("8. Delete Reply");
+        System.out.println("9. Shutdown");
         int option = myObj.nextInt();
         myObj.nextLine();
         switch (option) {
@@ -163,7 +155,7 @@ public class The_Forum_v2 {
                 startPt2();
                 break;
             case 2:
-                System.out.println("Available Groups to join: ");
+                System.out.println("Available Groups in the Forum: ");
                 allavailableGroups();
                 System.out.println("Enter the name of the group: ");
                 while (!checkifValidGroup(myObj.nextLine())) {
@@ -234,10 +226,21 @@ public class The_Forum_v2 {
                 startPt2();
                 break;
             case 8:
-                System.out.println("Shutting down......");
-                delay(400);
-                System.exit(0);
+                System.out.println("Enter the ID of the reply you want to delete: ");
+                int track5 = myObj.nextInt();
+                while(!checkifthatisyourReply(track5)){
+                    System.out.println("Try again, you are not the owner of this reply.");
+                    track5 = myObj.nextInt();
+                }
+                deleteReply(track5);
+                delay(400); 
+                startPt2();               
                 break;
+            case 9: 
+            System.out.println("Shutting down......");
+            delay(400);
+            System.exit(0);
+            break;
             default:
                 System.out.println("Invalid input.");
                 break;
@@ -245,7 +248,43 @@ public class The_Forum_v2 {
 
         myObj.close();
     }
-
+    public static boolean checkifthatisyourReply(int reply_id) {
+        String inputsql = "SELECT * FROM Reply WHERE id = ? and username = ?;";
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+                PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
+            prepstest.setInt(1, reply_id);
+            prepstest.setString(2, username);
+            connection.setAutoCommit(false);
+            boolean resultSetNotEmpty = prepstest.executeQuery().next();
+            return resultSetNotEmpty;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static void deleteReply(int reply_id) {
+        String inputsql = "UPDATE Attachment SET reply_id = NULL WHERE reply_id = ?; DELETE FROM Reply WHERE id = ?;";
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+                PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
+            prepstest.setInt(1, reply_id);
+            prepstest.setInt(2, reply_id);
+            connection.setAutoCommit(false);
+            prepstest.executeUpdate();
+            connection.commit();
+            System.out.println("Your reply has been deleted.");
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    System.out.println("Reply Not found.");
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    System.out.println("Reply Not found.");
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        }
+    }
     // Method that creates an attachment to a reply
     public static void createAttachment(String aname, String ainfo, byte[] abinary) {
         String inputsql = "INSERT INTO Attachment (reply_id, name, metadata, data) VALUES (?, ?, ?, ?);";
@@ -270,7 +309,6 @@ public class The_Forum_v2 {
             e.printStackTrace();
         }
     }
-
     // A method that posts a reply to a thread
     public static void postReply(String content) {
         ResultSet resultSet = null;
@@ -287,7 +325,7 @@ public class The_Forum_v2 {
                 reply_id = resultSet.getInt(1);
             }
             connection.commit();
-            System.out.println("Reply has been added to the thread.");
+            System.out.println("Reply has been added to the thread. Your reply ID is: " + reply_id + "");
         } catch (SQLException e) {
             if (connection != null) {
                 try {
@@ -319,6 +357,7 @@ public class The_Forum_v2 {
 
     // A method that displays the group members for a given group and user
     public static void seeGroupMembers(String group_name) {
+        int x = 1;
         String inputsql = "SELECT username FROM UserGroup WHERE group_name = ?;";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
                 PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
@@ -327,8 +366,10 @@ public class The_Forum_v2 {
             ResultSet rs = prepstest.executeQuery();
             System.out.println("Group Members:");
             while (rs.next()) {
-                System.out.println(rs.getString("username"));
+                System.out.println("" + x + " ) " + rs.getString("username"));
+                x = x + 1;
             }
+            delay(600);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -366,7 +407,7 @@ public class The_Forum_v2 {
                 go2 = false;
             } else {
                 System.out
-                        .println("Thread ID: " + thread_id + " is invalid. or you are not in the group: " + group_name);
+                        .println("Thread ID: " + thread_id + " is invalid, or you are not in the group: " + group_name);
             }
             return resultSetNotEmpty;
         } catch (SQLException e) {
@@ -540,11 +581,13 @@ public class The_Forum_v2 {
                 }
             }
             System.out.println("You are already in this group. ");
+            delay(200);
         }
     }
 
     // A method that displays all available threads in a group for a given user
     public static void seeAvailableThreads(String group_name) {
+        Boolean noThread = true;
         String inputsql = "SELECT * FROM Thread WHERE id in (Select thread_id from ThreadGroup where group_name = ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
                 PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
@@ -552,9 +595,14 @@ public class The_Forum_v2 {
             connection.setAutoCommit(false);
             ResultSet rs = prepstest.executeQuery();
             while (rs.next()) {
+                noThread = false;
                 System.out.println("Thread ID: " + rs.getString("id") + " Username: " + rs.getString("username")
                         + " Title: " + rs.getString("title") + " Date Created: " + rs.getString("date_created"));
             }
+            if (noThread) {
+                System.out.println("There is currently no threads for you to reply to.");
+            }
+            delay(500);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -601,40 +649,5 @@ public class The_Forum_v2 {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public static void read(String file, String split) throws SQLException, IOException {
-        // Check if the connection is closed
-        if (connection == null || connection.isClosed()) {
-            System.out.println("Connection is closed");
-            return;
-        }
-
-        // Open the file and execute each statement
-        InputStream input = Main.class.getClassLoader().getResourceAsStream(file);
-        byte[] buffer = new byte[input.available()];
-        input.read(buffer);
-        input.close();
-        String sql = new String(buffer);
-        String[] sqlStatements = sql.split(split);
-        for (String statement : sqlStatements) {
-            connection.createStatement().execute(statement.replace("\n", " "));
-        }
-    }
-
-    /**
-     * Checks if the database exists
-     * @return true if the database exists, false otherwise
-     * @throws SQLException
-     */
-    public static boolean exists() throws SQLException {
-        ResultSet resultSet = connection.getMetaData().getCatalogs();
-        while (resultSet.next()) {
-            String databaseName = resultSet.getString(1);
-            if (databaseName.equals("theforum")) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -24,11 +24,14 @@
  * 5. Follow the on-screen prompts to perform your desired operation.
  * 6. At any time, type the corresponding option number to select an action from the menu.
  * 
- * Sql Files Used:
+ * Sql Files Needed to be run before java code:
  * 1.theforum.sql
  * 2.storedprocedure1.sql
  * 3.storedprocedure2.sql
  * 4.trigger.sql
+ * 
+ * Run the Main.java file once before running this forum
+ * That file is where the sql files above will be able to read and executed
  */
 package com.csds341.project;
 
@@ -107,7 +110,7 @@ public class The_Forum_v1 {
 
         // This is the main menu for the user to select from
         delay(1000);
-        System.out.println("Pick an option: ");
+        System.out.println("Enter a number that corresponds to your choice of action: ");
         System.out.println("1. Create a new group");
         System.out.println("2. Join a group");
         System.out.println("3. Create a thread");
@@ -127,7 +130,7 @@ public class The_Forum_v1 {
                 createGroup(group_name, username);
                 break;
             case 2:
-                System.out.println("Available Groups to join: ");
+                System.out.println("Available Groups in The Forum: ");
                 allavailableGroups();
                 System.out.println("Enter the name of the group: ");
                 while (!checkifValidGroup(myObj.nextLine())) {
@@ -271,6 +274,7 @@ public class The_Forum_v1 {
 
     // A method that displays the group members for a given group and user
     public static void seeGroupMembers(String group_name) {
+        int x = 1;
         String inputsql = "SELECT username FROM UserGroup WHERE group_name = ?;";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
                 PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
@@ -279,8 +283,10 @@ public class The_Forum_v1 {
             ResultSet rs = prepstest.executeQuery();
             System.out.println("Group Members:");
             while (rs.next()) {
-                System.out.println(rs.getString("username"));
+                System.out.println("" + x + " ) " + rs.getString("username"));
+                x = x + 1;
             }
+            delay(600);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -318,7 +324,7 @@ public class The_Forum_v1 {
                 go2 = false;
             } else {
                 System.out
-                        .println("Thread ID: " + thread_id + " is invalid. or you are not in the group: " + group_name);
+                        .println("Thread ID: " + thread_id + " is invalid, or you are not in the group: " + group_name);
             }
             return resultSetNotEmpty;
         } catch (SQLException e) {
@@ -492,11 +498,13 @@ public class The_Forum_v1 {
                 }
             }
             System.out.println("You are already in this group. ");
+            delay(200);
         }
     }
 
     // A method that displays all available threads in a group for a given user
     public static void seeAvailableThreads(String group_name) {
+        Boolean noThread = true;
         String inputsql = "SELECT * FROM Thread WHERE id in (Select thread_id from ThreadGroup where group_name = ?);";
         try (Connection connection = DriverManager.getConnection(connectionUrl);
                 PreparedStatement prepstest = connection.prepareStatement(inputsql, Statement.RETURN_GENERATED_KEYS);) {
@@ -504,8 +512,12 @@ public class The_Forum_v1 {
             connection.setAutoCommit(false);
             ResultSet rs = prepstest.executeQuery();
             while (rs.next()) {
+                noThread = false;
                 System.out.println("Thread ID: " + rs.getString("id") + " Username: " + rs.getString("username")
                         + " Title: " + rs.getString("title") + " Date Created: " + rs.getString("date_created"));
+            }
+            if (noThread) {
+                System.out.println("There is currently no threads for you to reply to.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
