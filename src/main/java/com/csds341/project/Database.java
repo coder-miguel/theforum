@@ -86,7 +86,7 @@ public class Database {
         String sql = new String(buffer);
         String[] sqlStatements = sql.split(split);
         for (String statement : sqlStatements) {
-            conn.createStatement().execute(statement.replace("\n", " "));
+            conn.createStatement().execute(statement);
         }
     }
 
@@ -113,9 +113,9 @@ public class Database {
      */
     public String[] getUsers() throws SQLException {
         DataSet ds = new DataSet(conn.createStatement().executeQuery("SELECT username FROM ForumUser"));
-        String[] users = new String[ds.getData().length];
-        for (int i = 0; i < ds.getData().length; i++) {
-            users[i] = ds.getData()[i][0];
+        String[] users = new String[ds.length];
+        for (int i = 0; i < ds.length; i++) {
+            users[i] = ds.getData(i, "username");
         }
         return users;
     }
@@ -127,9 +127,9 @@ public class Database {
      */
     public String[] getGroups() throws SQLException {
         DataSet ds = new DataSet(conn.createStatement().executeQuery("SELECT name FROM ForumGroup"));
-        String[] groups = new String[ds.getData().length];
-        for (int i = 0; i < ds.getData().length; i++) {
-            groups[i] = ds.getData()[i][0];
+        String[] groups = new String[ds.length];
+        for (int i = 0; i < ds.length; i++) {
+            groups[i] = ds.getData(i, "name");
         }
         return groups;
     }
@@ -160,9 +160,9 @@ public class Database {
         ps.setString(1, user);
         ps.setString(2, user);
         DataSet ds = new DataSet(ps.executeQuery());
-        String[] groups = new String[ds.getData().length];
-        for (int i = 0; i < ds.getData().length; i++) {
-            groups[i] = ds.getData()[i][0];
+        String[] groups = new String[ds.length];
+        for (int i = 0; i < ds.length; i++) {
+            groups[i] = ds.getData(i, "name");
         }
         return groups;
     }
@@ -186,7 +186,7 @@ public class Database {
             WHERE ThreadGroup.group_name IS NULL
             OR Thread.username = ?
             OR ThreadGroup.group_name IN (
-                SELECT group_name
+                SELECT name
                 FROM ForumGroup
                 WHERE owner_name = ?
             )
@@ -202,8 +202,8 @@ public class Database {
         ps.setString(3, user);
         DataSet ds = new DataSet(ps.executeQuery());
         HashMap<Integer, String> threads = new HashMap<Integer, String>();
-        for (int i = 0; i < ds.getData().length; i++) {
-            threads.put(Integer.parseInt(ds.getData()[i][0]), ds.getData()[i][1]);
+        for (int i = 0; i < ds.length; i++) {
+            threads.put(Integer.parseInt(ds.getData(i, "id")), ds.getData(i, "title"));
         }
         return threads;
     }
@@ -220,8 +220,8 @@ public class Database {
         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, username);
         DataSet ds = new DataSet(ps.executeQuery());
-        if (ds.getData().length > 0) {
-            return password.equals(ds.getData()[0][0]);
+        if (ds.length > 0) {
+            return password.equals(ds.getData(0, "password"));
         }
         return false;
     }
@@ -311,21 +311,20 @@ public class Database {
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, thread_id);
         DataSet ds = new DataSet(ps.executeQuery());
-        String[] replies = new String[ds.getData().length];
-        for (int i = 0; i < ds.getData().length; i++) {
+        String[] replies = new String[ds.length];
+        for (int i = 0; i < ds.length; i++) {
             replies[i] = String.format(
                 """
                     ==============================
-                    username: %s
-                    date_created: %s
+                    username:  %s
+                    timestamp: %s
                     content:
-                    %s
-                """, ds.getData()[i][1], ds.getData()[i][3], ds.getData()[i][2]);
+                        %s
+                """, ds.getData(i, "username"), ds.getData(i, "date_created"), ds.getData(i, "content"));
                 String[] attachments = getAttachments(Integer.parseInt(ds.getData()[i][0]));
                 for (String attachment : attachments) {
                     replies[i] += attachment;
                 }
-                replies[i] += "=============================\n";
         }
         return replies;
     }
@@ -335,17 +334,16 @@ public class Database {
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, reply_id);
         DataSet ds = new DataSet(ps.executeQuery());
-        String[] attachments = new String[ds.getData().length];
-        for (int i = 0; i < ds.getData().length; i++) {
+        String[] attachments = new String[ds.length];
+        for (int i = 0; i < ds.length; i++) {
             attachments[i] = String.format(
                 """
-                    ------------------------------
-                    name: %s
-                    metadata: %s
-                    data:
-                    %s
-                    ------------------------------
-                """, ds.getData()[i][0], ds.getData()[i][1], ds.getData()[i][2]);
+                        ------------------------------
+                        name:     %s
+                        metadata: %s
+                        data:
+                            %s
+                """, ds.getData(i, "name"), ds.getData(i, "metadata"), ds.getData(i, "data"));
         }
         return attachments;
     }
@@ -379,9 +377,9 @@ public class Database {
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, group_name);
         DataSet ds = new DataSet(ps.executeQuery());
-        String[] members = new String[ds.getData().length];
-        for (int i = 0; i < ds.getData().length; i++) {
-            members[i] = ds.getData()[i][0];
+        String[] members = new String[ds.length];
+        for (int i = 0; i < ds.length; i++) {
+            members[i] = ds.getData(i, "username");
         }
         return members;
     }
@@ -410,7 +408,16 @@ public class Database {
         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, username);
         DataSet ds = new DataSet(ps.executeQuery());
-        return ds.getData().length > 0;
+        return ds.length > 0;
+    }
+
+    /**
+     * Check a username is good
+     * @param username the username
+     * @return true if the username is between 3 and 16 characters, false otherwise
+     */
+    public boolean goodUsername(String username) {
+        return username != null && username.length() >= 3 && username.length() <= 16;
     }
 
     /**
@@ -419,7 +426,7 @@ public class Database {
      * @return true if the password is between 3 and 16 characters, false otherwise
      */
     public static boolean goodPassword(String pw) {
-        return pw.length() >= 3 && pw.length() <= 16;
+        return pw.length() >= 8;
       }
 
     /**

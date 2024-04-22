@@ -4,10 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 public class DataSet {
+    public final int length;
     private String name;
     private String[] columns;
+    private HashMap<String, Integer> columnMap = new HashMap<>();
     private String[][] data;
 
     public DataSet(ResultSet rs) throws SQLException{
@@ -16,6 +19,7 @@ public class DataSet {
         columns = new String[columnCount];
         for (int i = 0; i < columnCount; i++) {
             columns[i] = rs.getMetaData().getColumnName(i + 1);
+            columnMap.put(columns[i], i);
         }
         int rowCount = 0;
         List<String[]> listeddata = new ArrayList<>();
@@ -31,6 +35,7 @@ public class DataSet {
         for (int i = 0; i < rowCount; i++) {
             data[i] = listeddata.get(i);
         }
+        length = rowCount;
     }
 
     public String getName() {
@@ -43,5 +48,9 @@ public class DataSet {
 
     public String[][] getData() {
         return data;
+    }
+
+    public String getData(int i, String j) {
+        return data[i][columnMap.get(j)];
     }
 }
