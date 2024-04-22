@@ -31,7 +31,7 @@ CREATE TABLE Reply (
 
 CREATE TABLE Attachment (
     id INT PRIMARY KEY IDENTITY,
-    reply_id INT NOT NULL,
+    reply_id INT NULL,
     name VARCHAR(255) NOT NULL,
     metadata VARCHAR(255) NOT NULL,
     data VARBINARY(MAX) NOT NULL,
