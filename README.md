@@ -28,20 +28,21 @@ https://drive.google.com/file/d/1Mqd3s_5D0qhksFYDah-cYSEmzq6K9eE_/view?usp=shari
 
 ### Functional Dependencies
 
-- `ForumUser.username` -> all attributes in `ForumUser`
-
-- `Reply.id` -> all attributes in `Reply` and `Thread`
-
-- `Attachment.id` -> all attributes in `Attachment` and `Reply`
-
-- `Thread.id` -> all attributes in `Thread` and `ForumUser`
-
-- `ForumGroup.name` -> all attributes in `ForumGroup` and `ForumUser`
-
-- `ForumGroup.username` , `ForumGroup.group_name` -> all attributes in `UserGroup`, `ForumUser` and `ThreadGroup`
-
-- `ThreadGroup.thread_id` , `ThreadGroup.group_name` -> all attributes in `ThreadGroup`, `Thread` and `UserGroup`
-
+<!-- markdownlint-disable md033 -->
+| | | |
+|--|--|--|
+| `ForumUser.username`      | → | `ForumUser` |
+| ( `UserGroup.group_name`<br> `UserGroup.username` ) | → | `UserGroup` `ForumGroup` `ForumUser` |
+| `UserGroup.group_name`    | → | `ForumGroup` `ForumUser` |
+| `UserGroup.username`      | → | `ForumUser` |
+| `ForumGroup.name`         | → | `ForumGroup` `ForumUser` |
+| ( `ThreadGroup.thread_id` <br> `ThreadGroup.group_name` ) | → |`ThreadGroup` `Thread` `ForumGroup` `ForumUser` |
+| `ThreadGroup.thread_id`   | → | `Thread` `ForumUser` |
+| `ThreadGroup.group_name`  | → | `ForumGroup` `ForumUser` |
+| `Thread.id`               | → | `Thread` `ForumUser` |
+| `Reply.id`                | → | `Reply` `Thread` `ForumUser` |
+| `Attachment.id`           | → | `Attachment` `Reply` `Thread` `ForumUser` |
+<!-- markdownlint-enable md033 -->
 
 ### Normalization Issues
 
@@ -49,7 +50,6 @@ https://drive.google.com/file/d/1Mqd3s_5D0qhksFYDah-cYSEmzq6K9eE_/view?usp=shari
     <!-- More? -->
 
 ## Physical Database Design
-
 
 ### Tables
 
@@ -215,11 +215,11 @@ WHERE R.username = 'user1' and R.content = 'reply content'
 
 - A web application that allows users to interact with the forum, sign up, log in, create threads, reply to threads, view threads, and create and join groups.  You can use it like Stack Overflow or a fandom wiki forum.
 
-# CSDS 341-TeamProjectRubric
+## CSDS 341-TeamProjectRubric
 
-- Good use cases for select insert update delete? 
-    
-```sql 
+- Good use cases for select insert update delete?
+
+```sql
     -- A user can create a group
 INSERT INTO ForumUser (username, password, date_created)
 VALUES ('user1', 'password1',  GETDATE())
@@ -264,9 +264,7 @@ FROM Reply R
 WHERE R.username = 'user1' and R.content = 'reply content'
 ```
 
-
-
-- Commits and Rollbaks with transactions? 
+- Commits and Rollbaks with transactions?
 
 ```sql
 -- We used commits to ensure that the changes made to the database are permanent
@@ -315,56 +313,18 @@ CREATE INDEX idx_thread_title ON Thread(title);
 ```
 
 - ER Diagram Correctness
+
 ```java
 // Refer to erd.png
 ```
 
-
-- Tables implemented & matching ER Diagram 
+- Tables implemented & matching ER Diagram
 
 ```java
 // Refer to erd.png & theforum.sql
 ```
 
-- Reasonable Normalization
-
-```java
-/*
- * Functional Dependencies:
- * 
- * - `ForumUser.username`   -> `ForumUser`
- * 
- * - `UserGroup.group_name`,
- *   `UserGroup.username`   -> `UserGroup`, `ForumGroup`, and `ForumUser`
- * 
- *   `UserGroup.username`   -> `ForumUser`
- * 
- * - `UserGroup.group_name` -> `ForumGroup` and `ForumUser`
- * 
- * - `ForumGroup.name`      -> `ForumGroup` and `ForumUser`
- * 
- * - `ThreadGroup.thread_id`,
- *   `ThreadGroup.group_name`-> `ThreadGroup`, `Thread`, `ForumGroup`, and `ForumUser`
- * 
- * - `ThreadGroup.thread_id` -> `Thread` and `ForumUser`
- * 
- * - `ThreadGroup.group_name`-> `ForumGroup` and `ForumUser`
- * 
- * - `Thread.id`            -> `Thread` and `ForumUser`
- * 
- * - `Reply.id`             -> `Reply`, `Thread`, and `ForumUser`
- * 
- * - `Attachment.id`        -> `Attachment`, `ForumUser`, `Reply` and `Thread`
- *
- * Normalization Issues:
- * Thread` and `Reply` are similar in structure, but replies are
- * generally child nodes of a thread. Normally, the starting of a
- * thread begins with a post (with possibly its own attachments),
- * but because `Reply` also has text content and attachments, we
- * decided to have thread not have any content other than a title. 
-```
-
-- Command Line Interface clarity 
+- Command Line Interface clarity
 
 ```java
 /*
@@ -372,7 +332,7 @@ Instructions for running the command line interface is written in the User Manua
 */
 ```
 
-- User Manual clarity 
+- User Manual clarity
 
 ```java
 /* User Manual:
@@ -396,9 +356,10 @@ Instructions for running the command line interface is written in the User Manua
  * 6. At any time, type the corresponding option number to select an action from the menu.
  */
 ```
-- Trigger 
 
-```sql 
+- Trigger
+
+```sql
 -- Create a trigger that inserts a new row into the UserGroup table 
 -- whenever a new row is inserted into the ForumGroup table.
 CREATE TRIGGER insertintoUserGroup
