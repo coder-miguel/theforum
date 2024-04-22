@@ -412,12 +412,21 @@ public class Database {
     }
 
     /**
+     * Check a username is good
+     * @param username the username
+     * @return true if the username is between 3 and 16 characters, false otherwise
+     */
+    public boolean goodUsername(String username) {
+        return username != null && username.length() >= 3 && username.length() <= 16;
+    }
+
+    /**
      * Check a password is good
      * @param pw the password
      * @return true if the password is between 3 and 16 characters, false otherwise
      */
     public static boolean goodPassword(String pw) {
-        return pw.length() >= 3 && pw.length() <= 16;
+        return pw.length() >= 8;
       }
 
     /**

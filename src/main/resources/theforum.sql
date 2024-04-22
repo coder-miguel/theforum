@@ -8,7 +8,8 @@ CREATE TABLE ForumUser (
     username VARCHAR(16) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
     date_created DATETIME NOT NULL,
-    CONSTRAINT username_length_check CHECK (LEN(username) >= 3 AND LEN(username) <= 16)
+    CONSTRAINT username_length_check CHECK (LEN(username) >= 3 AND LEN(username) <= 16),
+    CONSTRAINT password_length_check CHECK (LEN(password) >= 8)
 );
 
 CREATE TABLE Thread (
@@ -64,10 +65,6 @@ CREATE TABLE ThreadGroup (
     FOREIGN KEY (thread_id) REFERENCES Thread(id),
     FOREIGN KEY (group_name) REFERENCES ForumGroup(name)
 );
-
--- Create trigger to insert the name of the user who created a group into to user group table
-
-
 
 -- Indices
 

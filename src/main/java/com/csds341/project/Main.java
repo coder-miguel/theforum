@@ -48,25 +48,25 @@ public class Main {
                 }
             }));
 
-            /*
-             * Login
-             */
-            {
-                LoginMenu.show();
-                loggedinUser = LoginMenu.login();
-                if (loggedinUser == null) {
-                    System.exit(0);
-                }
-            }
+            do {
+                /*
+                 * Login
+                 */
+                do {
+                    LoginMenu.show();
+                    loggedinUser = LoginMenu.login();
+                    if (loggedinUser == null)
+                        System.exit(0);
+                } while (!theForum.userExists(loggedinUser));
 
-            /*
-             * Menu Loop
-             */
-            {
+                /*
+                 * Menu Loop
+                 */
                 do {
                     MainMenu.show();
                 } while (MainMenu.select() != MainMenu.EXIT);
-            }
+                loggedinUser = null;
+            } while (true);
 
         /**
          * Handle exceptions
@@ -139,7 +139,7 @@ public class Main {
                 } else {
                     loginAttempt = MainMenu.selectUser("Select a user to log in as: ");
                     if (loginAttempt == null) {
-                        return null;
+                        return "";
                     }
                     System.out.println("Enter in your password: ");
                     String password = scanner.nextLine();
@@ -147,7 +147,7 @@ public class Main {
                         attemtps++;
                         if (attemtps >= 3) {
                             System.out.println("Too many attempts. Please try again later.");
-                            return null;
+                            return "";
                         }
                         System.out.println("Invalid password. Please try again.");
                         password = scanner.nextLine();
@@ -170,11 +170,20 @@ public class Main {
             System.out.println("Enter in your new username: ");
             String username = scanner.nextLine();
             try {
-                while(theForum.userExists(username)) {
-                    System.out.println("Username already exists. Try again: ");
+                // Loop until a valid username is entered
+                while(true) {
+                    if (username.length() == 0)
+                        return "";
+                    else if (theForum.userExists(username))
+                        System.out.println("Username already exists. Try again: ");
+                    else if (!theForum.goodUsername(username))
+                        System.out.println("Username must be between 3 and 16 characters. Try again: ");
+                    else
+                        break;
                     username = scanner.nextLine();
                 }
                 String password = "";
+                // Loop until a valid password is entered
                 while(!Database.goodPassword(password)) {
                     System.out.println("Enter in your new password: ");
                     password = scanner.nextLine();
@@ -212,7 +221,7 @@ public class Main {
         static void show() {
             System.out.println("""
 
-                0) Exit
+                0) Logout
                 1) Create a new group
                 2) Join a group
                 3) Group members
