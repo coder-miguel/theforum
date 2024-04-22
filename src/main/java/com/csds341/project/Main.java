@@ -14,6 +14,50 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
+
+/**
+ * First prompts user to login or create a new user in the Login Menu:
+ * 
+ * 0) Exit
+ * 1) Log in as existing user
+ * 2) Log in as new user
+ * 
+ * Select an option by entering the corresponding number.
+ * 
+ * - If user chooses to exit, the program will exit.
+ * 
+ * - If user chooses to log in as an existing user, the program will prompt the user to enter in their username and password.
+ *   Three attempts will be allowed before the user is prompted to start over.
+ * 
+ * - If user chooses to log in as a new user, the program will prompt the user to create a username and password, and the program will start with the new user logged in.
+ * 
+ * After the user has logged in successfully, the program will display the Main Menu:
+ * 
+ * 0) Logout
+ * 1) Create a new group
+ * 2) Join a group
+ * 3) Group members
+ * 4) Start a new thread
+ * 5) Reply to a thread
+ * 6) Browse threads
+ * 
+ * Select an option by entering the corresponding number.
+ * 
+ * - If user chooses to logout, the program will log out and will display the Login Menu again.
+ * 
+ * - If user chooses to create a new group, the program will prompt the user to enter in the name of the group, and a trigger will automatically put the user in that group.
+ * 
+ * - If user chooses to join a group, the program will list all groups in the database and prompt the user to select the group they want to join.
+ * 
+ * - If user chooses to start a new thread, the program will prompt the user to enter in the title of the thread, will prompt the user to post the thread to any available groups, and then prompt the user to post the first reply to the thread.
+ *   If any required step is corrupted during this process, the database will roll back the changes.
+ * 
+ * - If user chooses to reply to a thread, the program will list all threads available to the user and prompt the user to select the thread they want to reply to.
+ *   Then the program will prompt the user to enter in the title of the thread, will prompt the user to post the reply with any number of attachments.
+ * 
+ * - If user chooses to browse threads, the program will list all threads available to the user and display all the replies and attachments.
+ * 
+ */
 public class Main {
     private static String loggedinUser;
     private static Database theForum;
@@ -114,7 +158,7 @@ public class Main {
                     System.out.println("Invalid input. Please enter a number between 0 and 2.");
                 }
             }
-            
+
             switch(selection) {
                 case 1:
                     user = existingUser();
